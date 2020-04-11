@@ -2,15 +2,22 @@ package com.gavinfenton.quizolation.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import java.io.Serializable;
+
 @Data
-public class Guess {
+@Entity
+public class Guess implements Serializable {
 
-    private Team team;
+    @EmbeddedId
+    private GuessId guessId;
 
-    private Question question;
-
+    @Column
     private String guess;
 
+    @Column
     private int points;
 
 }
