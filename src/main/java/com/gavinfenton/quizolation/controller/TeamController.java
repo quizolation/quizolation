@@ -18,7 +18,7 @@ public class TeamController {
 
     @GetMapping("")
     public ResponseEntity<?> getTeams() {
-        return new ResponseEntity<>(teamService.getTeams(), HttpStatus.OK);
+        return ResponseEntity.ok(teamService.getTeams());
     }
 
     @GetMapping("{id}")
