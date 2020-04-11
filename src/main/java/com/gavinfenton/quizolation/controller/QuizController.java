@@ -1,5 +1,6 @@
 package com.gavinfenton.quizolation.controller;
 
+import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Quiz;
 import com.gavinfenton.quizolation.service.QuizService;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("quiz")
 public class QuizController {
 
     private final QuizService quizService;
@@ -18,29 +18,29 @@ public class QuizController {
         this.quizService = quizService;
     }
 
-    @PostMapping("")
+    @PostMapping(Endpoints.QUIZZES)
     public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
         return new ResponseEntity<>(quizService.createQuiz(quiz), HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Quiz> getQuiz(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(quizService.getQuiz(id));
+    @GetMapping(Endpoints.QUIZ)
+    public ResponseEntity<Quiz> getQuiz(@PathVariable("quizId") Long quizId) {
+        return ResponseEntity.ok(quizService.getQuiz(quizId));
     }
 
-    @GetMapping("")
+    @GetMapping(Endpoints.QUIZZES)
     public ResponseEntity<List<Quiz>> getAllQuizzes() {
         return ResponseEntity.ok(quizService.getAllQuizzes());
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Quiz> updateQuiz(@RequestBody Quiz quiz, @PathVariable("id") Long id) {
-        return ResponseEntity.ok(quizService.updateQuiz(quiz, id));
+    @PutMapping(Endpoints.QUIZ)
+    public ResponseEntity<Quiz> updateQuiz(@RequestBody Quiz quiz, @PathVariable Long quizId) {
+        return ResponseEntity.ok(quizService.updateQuiz(quiz, quizId));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteQuiz(@PathVariable("id") Long id) {
-        quizService.deleteQuiz(id);
+    @DeleteMapping(Endpoints.QUIZ)
+    public ResponseEntity<?> deleteQuiz(@PathVariable Long quizId) {
+        quizService.deleteQuiz(quizId);
 
         return ResponseEntity.ok().build();
     }
