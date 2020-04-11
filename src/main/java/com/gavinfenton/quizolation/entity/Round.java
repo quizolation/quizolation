@@ -11,6 +11,6 @@ public class Round extends BaseEntity {
 
     private String description;
 
-    private List<Question> rounds;
+    private List<Question> questions;
 
 }

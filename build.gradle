@@ -2,11 +2,18 @@ plugins {
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
+	id "org.flywaydb.flyway" version "6.3.3"
 }
 
 group = 'com.gavinfenton'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+flyway {
+	url = 'jdbc:postgresql://localhost:5432/quizolation'
+	user = 'quizolation'
+	password = '!@Py3mi1QDAozU72'
+}
 
 configurations {
 	compileOnly {
