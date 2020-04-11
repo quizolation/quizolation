@@ -1,4 +1,4 @@
-package com.gavinfenton.webquiz.entity;
+package com.gavinfenton.quizolation.entity;
 
 import lombok.Data;
 

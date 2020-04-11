@@ -1,4 +1,4 @@
-package com.gavinfenton.webquiz;
+package com.gavinfenton.quizolation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
