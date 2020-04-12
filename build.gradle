@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.gavinfenton'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '1.11'
 
 flyway {
 	url = 'jdbc:postgresql://localhost:5432/quizolation'
