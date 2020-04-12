@@ -16,16 +16,16 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
 
+    public Team createTeam(Team team) {
+        return teamRepository.save(team);
+    }
+
     public List<Team> getTeams() {
         return teamRepository.findAll();
     }
 
     public Team getTeam(Long id) {
         return teamRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "Team"));
-    }
-
-    public Team createTeam(Team team) {
-        return teamRepository.save(team);
     }
 
     public Team updateTeam(Long id, Team team) {
