@@ -26,18 +26,18 @@ public class QuizService {
         return quizRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "Quiz"));
     }
 
-    public List<Quiz> getAllQuizzes() {
+    public List<Quiz> getQuizzes() {
         return quizRepository.findAll();
     }
 
-    public Quiz updateQuiz(Quiz quiz, Long id) {
+    public Quiz updateQuiz(Long id, Quiz quiz) {
         quiz.setId(id);
 
         return quizRepository.save(quiz);
     }
-    
+
     public void deleteQuiz(Long id) {
-        quizRepository.delete(getQuiz(id));
+        quizRepository.deleteById(id);
     }
 
 }

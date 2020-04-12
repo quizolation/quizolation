@@ -24,22 +24,22 @@ public class QuizController {
     }
 
     @GetMapping(Endpoints.QUIZ)
-    public ResponseEntity<Quiz> getQuiz(@PathVariable("quizId") Long quizId) {
+    public ResponseEntity<Quiz> getQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
         return ResponseEntity.ok(quizService.getQuiz(quizId));
     }
 
     @GetMapping(Endpoints.QUIZZES)
-    public ResponseEntity<List<Quiz>> getAllQuizzes() {
-        return ResponseEntity.ok(quizService.getAllQuizzes());
+    public ResponseEntity<List<Quiz>> getQuizzes() {
+        return ResponseEntity.ok(quizService.getQuizzes());
     }
 
     @PutMapping(Endpoints.QUIZ)
-    public ResponseEntity<Quiz> updateQuiz(@RequestBody Quiz quiz, @PathVariable Long quizId) {
-        return ResponseEntity.ok(quizService.updateQuiz(quiz, quizId));
+    public ResponseEntity<Quiz> updateQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Quiz quiz) {
+        return ResponseEntity.ok(quizService.updateQuiz(quizId, quiz));
     }
 
     @DeleteMapping(Endpoints.QUIZ)
-    public ResponseEntity<?> deleteQuiz(@PathVariable Long quizId) {
+    public ResponseEntity<?> deleteQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
         quizService.deleteQuiz(quizId);
 
         return ResponseEntity.ok().build();
