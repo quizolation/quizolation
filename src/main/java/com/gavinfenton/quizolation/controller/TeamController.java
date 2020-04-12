@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.util.List;
+
 @RestController
 public class TeamController {
 
@@ -17,28 +21,31 @@ public class TeamController {
     }
 
     @PostMapping(Endpoints.TEAMS)
-    public ResponseEntity<?> createTeam(@RequestBody Team team) {
-        return new ResponseEntity<>(teamService.createTeam(team), HttpStatus.CREATED);
+    public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
+        Team createdTeam = teamService.createTeam(team);
+
+        return ResponseEntity.created(URI.create(request.getRequestURI() + createdTeam.getId())).body(createdTeam);
     }
 
     @GetMapping(Endpoints.TEAMS)
-    public ResponseEntity<?> getTeams() {
+    public ResponseEntity<List<Team>> getTeams() {
         return ResponseEntity.ok(teamService.getTeams());
     }
 
     @GetMapping(Endpoints.TEAM)
-    public ResponseEntity<?> getTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
+    public ResponseEntity<Team> getTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
         return ResponseEntity.ok(teamService.getTeam(teamId));
     }
 
     @PutMapping(Endpoints.TEAM)
-    public ResponseEntity<?> updateTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId, @RequestBody Team team) {
+    public ResponseEntity<Team> updateTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId, @RequestBody Team team) {
         return new ResponseEntity<>(teamService.updateTeam(teamId, team), HttpStatus.OK);
     }
 
     @DeleteMapping(Endpoints.TEAM)
-    public void deleteTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
+    public ResponseEntity<Void> deleteTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
         teamService.deleteTeam(teamId);
+        return ResponseEntity.noContent().build();
     }
 
 }
