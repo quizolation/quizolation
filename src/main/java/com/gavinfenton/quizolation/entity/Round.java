@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class Round extends BaseEntity {
 
-    @Column
+    @Column(nullable = false, updatable = false)
     private Long quizId;
 
     @Column
