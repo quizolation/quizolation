@@ -30,14 +30,17 @@ public class QuizService {
         return quizRepository.findAll();
     }
 
-    public Quiz updateQuiz(Quiz quiz, Long id) {
-        quiz.setId(id);
+    public List<Quiz> getQuizzes() {
+        return quizRepository.findAll();
+    }
 
+    public Quiz updateQuiz(Long id, Quiz quiz) {
+        quiz.setId(id);
         return quizRepository.save(quiz);
     }
-    
+
     public void deleteQuiz(Long id) {
-        quizRepository.delete(getQuiz(id));
+        quizRepository.deleteById(id);
     }
 
 }
