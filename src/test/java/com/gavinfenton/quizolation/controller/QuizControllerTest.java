@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = QuizController.class)
@@ -47,6 +48,8 @@ public class QuizControllerTest {
         Quiz quizSaving = new Quiz();
         quizSaving.setName("Some Quiz");
         Quiz quizExpected = new Quiz();
+        Long idExpected = 135L;
+        quizExpected.setId(idExpected);
         quizExpected.setName("Some Other Quiz");
         given(quizService.createQuiz(quizSaving)).willReturn(quizExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -61,6 +64,7 @@ public class QuizControllerTest {
         // Then
         verify(quizService).createQuiz(quizSaving);
         response.andExpect(status().isCreated());
+        response.andExpect(header().string("Location", Endpoints.QUIZZES + "/" + idExpected));
         assertEquals(quizExpected, quizActual);
     }
 
@@ -148,7 +152,7 @@ public class QuizControllerTest {
 
         // Then
         verify(quizService).deleteQuiz(idDeleting);
-        response.andExpect(status().isOk());
+        response.andExpect(status().isNoContent());
     }
 
 }
