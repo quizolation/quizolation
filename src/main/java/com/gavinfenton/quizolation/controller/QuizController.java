@@ -42,7 +42,7 @@ public class QuizController {
     }
 
     @DeleteMapping(Endpoints.QUIZ)
-    public ResponseEntity<?> deleteQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
+    public ResponseEntity<Void> deleteQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
         quizService.deleteQuiz(quizId);
 
         return ResponseEntity.noContent().build();
