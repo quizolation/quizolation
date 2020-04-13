@@ -6,4 +6,8 @@ public interface Endpoints {
     String QUIZZES = "/quizzes";
     String QUIZ = QUIZZES + "/{" + QUIZ_ID + "}";
 
+    String TEAM_ID = "teamId";
+    String TEAMS = "/teams";
+    String TEAM = TEAMS + "/{" + TEAM_ID + "}";
+
 }
