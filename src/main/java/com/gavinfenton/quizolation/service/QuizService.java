@@ -32,7 +32,6 @@ public class QuizService {
 
     public Quiz updateQuiz(Long id, Quiz quiz) {
         quiz.setId(id);
-
         return quizRepository.save(quiz);
     }
 
