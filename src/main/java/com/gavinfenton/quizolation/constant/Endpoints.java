@@ -10,6 +10,10 @@ public interface Endpoints {
     String ROUNDS = QUIZ + "/rounds";
     String ROUND = ROUNDS + "/{" + ROUND_ID + "}";
 
+    String QUESTION_ID = "questionId";
+    String QUESTIONS = ROUND + "/questions";
+    String QUESTION = QUESTIONS + "/{" + QUESTION_ID + "}";
+
     String TEAM_ID = "teamId";
     String TEAMS = "/teams";
     String TEAM = TEAMS + "/{" + TEAM_ID + "}";
