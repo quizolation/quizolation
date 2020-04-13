@@ -2,6 +2,7 @@ package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Team;
+import com.gavinfenton.quizolation.helper.EndpointHelper;
 import com.gavinfenton.quizolation.service.TeamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class TeamController {
     @PostMapping(Endpoints.TEAMS)
     public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
         Team createdTeam = teamService.createTeam(team);
+        URI location = URI.create(EndpointHelper.insertIds(Endpoints.TEAM, createdTeam.getId()));
 
         return ResponseEntity.created(URI.create(request.getRequestURI() + "/" + createdTeam.getId())).body(createdTeam);
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Quiz;
 import com.gavinfenton.quizolation.entity.Round;
+import com.gavinfenton.quizolation.helper.EndpointHelper;
 import com.gavinfenton.quizolation.service.QuizService;
 import com.gavinfenton.quizolation.service.RoundService;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,7 @@ public class RoundControllerTest {
         // Then
         verify(roundService).createRound(quizIdSaving, roundSaving);
         response.andExpect(status().isCreated());
-        response.andExpect(header().string("Location", Endpoints.ROUND.replace("{quizId}", quizIdSaving.toString()).replace("{roundId}", idExpected.toString())));
+        response.andExpect(header().string("Location", EndpointHelper.insertIds(Endpoints.ROUND, quizIdSaving, idExpected)));
         assertEquals(roundExpected, roundActual);
     }
 

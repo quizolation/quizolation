@@ -2,11 +2,11 @@ package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Round;
+import com.gavinfenton.quizolation.helper.EndpointHelper;
 import com.gavinfenton.quizolation.service.RoundService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 
@@ -20,10 +20,11 @@ public class RoundController {
     }
 
     @PostMapping(Endpoints.ROUNDS)
-    public ResponseEntity<Round> createRound(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Round round, HttpServletRequest request) {
+    public ResponseEntity<Round> createRound(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Round round) {
         Round created = roundService.createRound(quizId, round);
+        URI location = URI.create(EndpointHelper.insertIds(Endpoints.ROUND, quizId, created.getId()));
 
-        return ResponseEntity.created(URI.create(request.getRequestURI() + "/" + created.getId())).body(created);
+        return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping(Endpoints.ROUND)
