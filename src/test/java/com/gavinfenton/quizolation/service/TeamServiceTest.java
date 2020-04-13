@@ -70,12 +70,11 @@ public class TeamServiceTest {
         Team teamSaving = new Team();
         teamSaving.setId(1L);
         teamSaving.setName("Team name");
-        Long idExpected = teamSaving.getId();
         Team teamExpected = new Team();
         given(teamRepository.save(teamSaving)).willReturn(teamExpected);
 
         //When
-        Team teamActual = teamService.updateTeam(idExpected, teamSaving);
+        Team teamActual = teamService.updateTeam(32L, teamSaving);
 
         //Then
         verify(teamRepository).save(teamSaving);
@@ -85,19 +84,17 @@ public class TeamServiceTest {
     @Test
     public void testGetTeamReturnsExistingTeamFromRepository() {
         // Given
-        Team teamExpected1 = new Team();
-        Team teamExpected2 = new Team();
-        teamExpected1.setName("Team 1");
-        teamExpected2.setName("Team 2");
-        List<Team> teamsExpected = Arrays.asList(teamExpected1, teamExpected2);
-        given(teamRepository.findAll()).willReturn(teamsExpected);
+        Team teamExpected = new Team();
+        Long idExpected = 321L;
+        teamExpected.setName("Some Quiz");
+        given(teamRepository.findById(idExpected)).willReturn(Optional.of(teamExpected));
 
-        //When
-        List<Team> teamsActual = teamService.getTeams();
+        // When
+        Team teamActual = teamService.getTeam(idExpected);
 
-        //Then
-        verify(teamRepository).findAll();
-        assertEquals(teamsActual, teamsExpected);
+        // Then
+        verify(teamRepository).findById(idExpected);
+        assertEquals(teamExpected, teamActual);
     }
 
     @Test

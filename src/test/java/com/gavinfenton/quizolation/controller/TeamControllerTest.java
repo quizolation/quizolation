@@ -7,7 +7,6 @@ import com.gavinfenton.quizolation.entity.Team;
 import com.gavinfenton.quizolation.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -94,7 +93,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetTeasCallsAndReturnsTeamsFromService() throws Exception {
+    public void testGetTeamsCallsAndReturnsTeamsFromService() throws Exception {
         // Given
         Team teamExpected1 = new Team();
         Team teamExpected2 = new Team();
