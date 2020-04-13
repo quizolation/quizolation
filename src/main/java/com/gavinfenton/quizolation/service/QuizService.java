@@ -26,10 +26,6 @@ public class QuizService {
         return quizRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "Quiz"));
     }
 
-    public List<Quiz> getAllQuizzes() {
-        return quizRepository.findAll();
-    }
-
     public List<Quiz> getQuizzes() {
         return quizRepository.findAll();
     }

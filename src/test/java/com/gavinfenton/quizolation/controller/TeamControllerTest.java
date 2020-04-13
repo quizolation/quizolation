@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @WebMvcTest(controllers = TeamController.class)
 public class TeamControllerTest {
 
@@ -44,7 +44,8 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGivenTeamsWhenTeamsThenReturnJsonArray() throws Exception {
+    public void testGetTeamCallsAndReturnsQuizFromService() throws Exception {
+        //Given
         Team teamExpected = new Team();
         Long idExpected = 1L;
         teamExpected.setName("Team 1");
@@ -68,9 +69,12 @@ public class TeamControllerTest {
 
     @Test
     public void testCreateTestCallsAndReturnsTeamFromService() throws Exception {
+        //Given
         Team teamSaving = new Team();
         teamSaving.setName("Some Team");
         Team teamExpected = new Team();
+        Long idExpected = 135L;
+        teamExpected.setId(idExpected);
         teamExpected.setName("Some Other Team");
         given(teamService.createTeam(teamSaving)).willReturn(teamExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -85,6 +89,7 @@ public class TeamControllerTest {
         // Then
         verify(teamService).createTeam(teamSaving);
         response.andExpect(status().isCreated());
+        response.andExpect(header().string("Location", Endpoints.TEAMS + "/" + idExpected));
         assertEquals(teamExpected, teamActual);
     }
 

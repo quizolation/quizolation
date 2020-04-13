@@ -24,7 +24,7 @@ public class TeamController {
     public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
         Team createdTeam = teamService.createTeam(team);
 
-        return ResponseEntity.created(URI.create(request.getRequestURI() + createdTeam.getId())).body(createdTeam);
+        return ResponseEntity.created(URI.create(request.getRequestURI() + "/" + createdTeam.getId())).body(createdTeam);
     }
 
     @GetMapping(Endpoints.TEAMS)

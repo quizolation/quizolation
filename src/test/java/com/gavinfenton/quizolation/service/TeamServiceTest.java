@@ -31,59 +31,88 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testCreateTeam() {
+    public void testCreateTeamSavesToAndReturnsFromRepository() {
+        //Given
         Team teamSaving = new Team();
         teamSaving.setName("Team name");
         Team teamExpected = new Team();
-
         given(teamRepository.save(teamSaving)).willReturn(teamExpected);
 
+        //When
         Team teamActual = teamService.createTeam(teamSaving);
 
+        //When
         verify(teamRepository).save(teamSaving);
         assertEquals(teamExpected, teamActual);
     }
 
     @Test
-    public void testUpdateTeam() {
+    public void testCreateTeamNullsIdBeforeSaveAndReturnsFromRepository() {
+        // Given
         Team teamSaving = new Team();
-        teamSaving.setId(1L);
-        teamSaving.setName("Team name");
-        Long idExpected = teamSaving.getId();
+        teamSaving.setId(123L);
+        teamSaving.setName("Some Quiz");
         Team teamExpected = new Team();
-
         given(teamRepository.save(teamSaving)).willReturn(teamExpected);
 
-        Team teamActual = teamService.updateTeam(idExpected, teamSaving);
-        assertEquals(teamActual, teamExpected);
+        // When
+        Team teamActual = teamService.createTeam(teamSaving);
+
+        // Then
+        assertNull(teamSaving.getId());
+        verify(teamRepository).save(teamSaving);
+        assertEquals(teamExpected, teamActual);
     }
 
     @Test
-    public void testGetTeam() {
+    public void testUpdateTeamSavesToAndReturnsFromRepository() {
+        //Given
         Team teamSaving = new Team();
         teamSaving.setId(1L);
         teamSaving.setName("Team name");
-        Team teamExpected = new Team();
         Long idExpected = teamSaving.getId();
+        Team teamExpected = new Team();
+        given(teamRepository.save(teamSaving)).willReturn(teamExpected);
 
-        given(teamRepository.findById(idExpected)).willReturn(Optional.of(teamExpected));
+        //When
+        Team teamActual = teamService.updateTeam(idExpected, teamSaving);
 
-        Team teamActual = teamService.getTeam(idExpected);
-
-        verify(teamRepository).findById(idExpected);
+        //Then
+        verify(teamRepository).save(teamSaving);
         assertEquals(teamActual, teamExpected);
     }
 
     @Test
-    public void testGetTeamThrowsException() {
+    public void testGetTeamReturnsExistingTeamFromRepository() {
+        // Given
+        Team teamExpected1 = new Team();
+        Team teamExpected2 = new Team();
+        teamExpected1.setName("Team 1");
+        teamExpected2.setName("Team 2");
+        List<Team> teamsExpected = Arrays.asList(teamExpected1, teamExpected2);
+        given(teamRepository.findAll()).willReturn(teamsExpected);
+
+        //When
+        List<Team> teamsActual = teamService.getTeams();
+
+        //Then
+        verify(teamRepository).findAll();
+        assertEquals(teamsActual, teamsExpected);
+    }
+
+    @Test
+    public void testGetTeamThrowsExceptionForNonExistingTeam() {
+        //Given
         Long idExpected = 32L;
         given(teamRepository.findById(idExpected)).willReturn(Optional.empty());
 
+        //When/then
         assertThrows(ObjectNotFoundException.class, () -> teamService.getTeam(idExpected));
     }
 
     @Test
     public void testGetTeamsReturnsExistingTeamsFromRepo() {
+        //Given
         Team team1 = new Team();
         Team team2 = new Team();
         team1.setName("Team 1");
@@ -100,7 +129,7 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testDeleteTeam(){
+    public void testDeleteTeamCallsDeleteOnRepository() {
         // Given
         Long idDeleting = 321L;
 
@@ -109,7 +138,26 @@ public class TeamServiceTest {
 
         // Then
         verify(teamRepository).deleteById(idDeleting);
+    }
 
+    @Test
+    public void testUpdateTeamSetsIdBeforeSaveAndReturnsFromRepository() {
+        // Given
+        Team teamSaving = new Team();
+        teamSaving.setName("Some Team");
+        teamSaving.setId(32L);
+        Team teamExpected = new Team();
+        Long idExpected = 1L;
+        teamExpected.setId(idExpected);
+        given(teamRepository.save(teamSaving)).willReturn(teamExpected);
+
+        // When
+        Team teamActual = teamService.updateTeam(idExpected, teamSaving);
+
+        // Then
+        assertEquals(idExpected, teamSaving.getId());
+        verify(teamRepository).save(teamSaving);
+        assertEquals(teamExpected, teamActual);
     }
 
 }

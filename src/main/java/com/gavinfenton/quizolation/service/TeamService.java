@@ -17,6 +17,7 @@ public class TeamService {
     }
 
     public Team createTeam(Team team) {
+        team.setId(null);
         return teamRepository.save(team);
     }
 

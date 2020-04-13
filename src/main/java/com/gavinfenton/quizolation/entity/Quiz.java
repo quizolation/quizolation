@@ -1,6 +1,5 @@
 package com.gavinfenton.quizolation.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
