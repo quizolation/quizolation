@@ -26,7 +26,7 @@ public class TeamController {
         Team createdTeam = teamService.createTeam(team);
         URI location = URI.create(EndpointHelper.insertIds(Endpoints.TEAM, createdTeam.getId()));
 
-        return ResponseEntity.created(URI.create(request.getRequestURI() + "/" + createdTeam.getId())).body(createdTeam);
+        return ResponseEntity.created(location).body(createdTeam);
     }
 
     @GetMapping(Endpoints.TEAMS)

@@ -3,10 +3,8 @@ package com.gavinfenton.quizolation.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gavinfenton.quizolation.constant.Endpoints;
-import com.gavinfenton.quizolation.entity.Quiz;
 import com.gavinfenton.quizolation.entity.Round;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
-import com.gavinfenton.quizolation.service.QuizService;
 import com.gavinfenton.quizolation.service.RoundService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,13 +30,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = RoundController.class)
 public class RoundControllerTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @MockBean
     private RoundService roundService;
-
     @Autowired
     private MockMvc mvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
@@ -162,5 +158,5 @@ public class RoundControllerTest {
         verify(roundService).deleteRound(idDeleting);
         response.andExpect(status().isNoContent());
     }
-    
+
 }
