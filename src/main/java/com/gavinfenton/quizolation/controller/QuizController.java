@@ -28,7 +28,7 @@ public class QuizController {
 
     @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
     public ResponseEntity<?> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId, HttpServletRequest request) {
-        Quiz quizWithTeamAdded = quizService.addTeamToQuiz(quizId, teamId);
+        Quiz teamsAdded = quizService.addTeamToQuiz(quizId, teamId);
 
         return null;
     }
