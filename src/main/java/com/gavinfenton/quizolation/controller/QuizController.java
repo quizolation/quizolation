@@ -2,11 +2,11 @@ package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Quiz;
+import com.gavinfenton.quizolation.helper.EndpointHelper;
 import com.gavinfenton.quizolation.service.QuizService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 
@@ -20,10 +20,11 @@ public class QuizController {
     }
 
     @PostMapping(Endpoints.QUIZZES)
-    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz, HttpServletRequest request) {
+    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
         Quiz created = quizService.createQuiz(quiz);
+        URI location = URI.create(EndpointHelper.insertIds(Endpoints.QUIZ, created.getId()));
 
-        return ResponseEntity.created(URI.create(request.getRequestURI() + "/" + created.getId())).body(created);
+        return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping(Endpoints.QUIZ)
