@@ -31,8 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RoundControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @MockBean
     private RoundService roundService;
+
     @Autowired
     private MockMvc mvc;
 
