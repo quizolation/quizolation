@@ -32,8 +32,7 @@ public class QuizService {
 
         quiz.getTeams().add(team);
 
-        quizRepository.save(quiz);
-        return quiz;
+        return quizRepository.save(quiz);
     }
 
     public Quiz getQuiz(Long id) {

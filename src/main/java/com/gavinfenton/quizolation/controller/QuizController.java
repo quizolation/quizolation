@@ -28,10 +28,11 @@ public class QuizController {
     }
 
     @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
-    public ResponseEntity<?> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId, HttpServletRequest request) {
-        Quiz teamsAdded = quizService.addTeamToQuiz(quizId, teamId);
+    public ResponseEntity<?> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId) {
+        Quiz created = quizService.addTeamToQuiz(quizId, teamId);
 
-        return null;
+        URI location = URI.create(EndpointHelper.insertIds(Endpoints.QUIZ + Endpoints.TEAM, quizId, teamId));
+        return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping(Endpoints.QUIZ)
