@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 @Entity
 public class Question extends BaseEntity {
 
-    @Column
+    @Column(nullable = false, updatable = false)
     private Long roundId;
 
     @Column
