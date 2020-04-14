@@ -48,7 +48,6 @@ public class QuestionControllerTest {
         // Given
         Question questionSaving = new Question();
         questionSaving.setQuestion("Some Question");
-        Long quizIdSaving = 91L;
         Long roundIdSaving = 92L;
         Question questionExpected = new Question();
         Long idExpected = 135L;
@@ -56,7 +55,7 @@ public class QuestionControllerTest {
         questionExpected.setQuestion("Some Other Question");
         given(questionService.createQuestion(roundIdSaving, questionSaving)).willReturn(questionExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post(Endpoints.QUESTIONS, quizIdSaving, roundIdSaving)
+                .post(Endpoints.ROUND_QUESTIONS, roundIdSaving)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(questionSaving));
 
@@ -67,21 +66,19 @@ public class QuestionControllerTest {
         // Then
         verify(questionService).createQuestion(roundIdSaving, questionSaving);
         response.andExpect(status().isCreated());
-        response.andExpect(header().string("Location", EndpointHelper.insertIds(Endpoints.QUESTION, quizIdSaving, roundIdSaving, idExpected)));
+        response.andExpect(header().string("Location", EndpointHelper.insertId(Endpoints.QUESTION, idExpected)));
         assertEquals(questionExpected, questionActual);
     }
 
     @Test
     public void testGetQuestionCallsAndReturnsQuestionFromService() throws Exception {
         // Given
-        Long quizIdExpected = 21L;
-        Long roundIdExpected = 12L;
         Question questionExpected = new Question();
         Long idExpected = 321L;
         questionExpected.setQuestion("Some Question");
         given(questionService.getQuestion(idExpected)).willReturn(questionExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get(Endpoints.QUESTION, quizIdExpected, roundIdExpected, idExpected)
+                .get(Endpoints.QUESTION, idExpected)
                 .accept(MediaType.APPLICATION_JSON);
 
         // When
@@ -97,7 +94,6 @@ public class QuestionControllerTest {
     @Test
     public void testGetQuestionsCallsAndReturnsQuestionsFromService() throws Exception {
         // Given
-        Long quizIdExpected = 21L;
         Long roundIdExpected = 12L;
         Question questionExpected1 = new Question();
         Question questionExpected2 = new Question();
@@ -106,7 +102,7 @@ public class QuestionControllerTest {
         List<Question> questionsExpected = Arrays.asList(questionExpected1, questionExpected2);
         given(questionService.getQuestions(roundIdExpected)).willReturn(questionsExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get(Endpoints.QUESTIONS, quizIdExpected, roundIdExpected)
+                .get(Endpoints.ROUND_QUESTIONS, roundIdExpected)
                 .accept(MediaType.APPLICATION_JSON);
 
         // When
@@ -125,8 +121,6 @@ public class QuestionControllerTest {
     @Test
     public void testUpdateQuestionCallsAndReturnsQuestionFromService() throws Exception {
         // Given
-        Long quizIdSaving = 21L;
-        Long roundIdSaving = 12L;
         Question questionSaving = new Question();
         Long idSaving = 321L;
         questionSaving.setId(idSaving);
@@ -135,7 +129,7 @@ public class QuestionControllerTest {
         questionExpected.setQuestion("Some Other Question");
         given(questionService.updateQuestion(idSaving, questionSaving)).willReturn(questionExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .put(Endpoints.QUESTION, quizIdSaving, roundIdSaving, idSaving)
+                .put(Endpoints.QUESTION, idSaving)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(questionSaving));
 
@@ -152,11 +146,9 @@ public class QuestionControllerTest {
     @Test
     public void testDeleteQuestionCallsService() throws Exception {
         // Given
-        Long quizIdDeleting = 21L;
-        Long roundIdDeleting = 12L;
         Long idDeleting = 321L;
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .delete(Endpoints.QUESTION, quizIdDeleting, roundIdDeleting, idDeleting);
+                .delete(Endpoints.QUESTION, idDeleting);
 
         // When
         ResultActions response = mvc.perform(request);

@@ -19,10 +19,10 @@ public class RoundController {
         this.roundService = roundService;
     }
 
-    @PostMapping(Endpoints.ROUNDS)
+    @PostMapping(Endpoints.QUIZ_ROUNDS)
     public ResponseEntity<Round> createRound(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Round round) {
         Round created = roundService.createRound(quizId, round);
-        URI location = URI.create(EndpointHelper.insertIds(Endpoints.ROUND, quizId, created.getId()));
+        URI location = URI.create(EndpointHelper.insertId(Endpoints.ROUND, created.getId()));
 
         return ResponseEntity.created(location).body(created);
     }
@@ -32,7 +32,7 @@ public class RoundController {
         return ResponseEntity.ok(roundService.getRound(roundId));
     }
 
-    @GetMapping(Endpoints.ROUNDS)
+    @GetMapping(Endpoints.QUIZ_ROUNDS)
     public ResponseEntity<List<Round>> getRounds(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
         return ResponseEntity.ok(roundService.getRounds(quizId));
     }

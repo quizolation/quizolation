@@ -22,7 +22,7 @@ public class QuizController {
     @PostMapping(Endpoints.QUIZZES)
     public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
         Quiz created = quizService.createQuiz(quiz);
-        URI location = URI.create(EndpointHelper.insertIds(Endpoints.QUIZ, created.getId()));
+        URI location = URI.create(EndpointHelper.insertId(Endpoints.QUIZ, created.getId()));
 
         return ResponseEntity.created(location).body(created);
     }
