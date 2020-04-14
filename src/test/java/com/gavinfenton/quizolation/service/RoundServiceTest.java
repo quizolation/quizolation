@@ -25,6 +25,9 @@ public class RoundServiceTest {
     @Mock
     private RoundRepository roundRepository;
 
+    @Mock
+    private QuizService quizService;
+
     @BeforeEach
     public void setup() {
         initMocks(this);
