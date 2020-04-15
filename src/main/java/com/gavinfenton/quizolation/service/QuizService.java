@@ -27,8 +27,8 @@ public class QuizService {
 
     public Quiz addTeamToQuiz(Long quizId, Long teamId) {
         //Find that both team and quiz already exist
-        Team team = teamService.getTeam(teamId);
         Quiz quiz = getQuiz(quizId);
+        Team team = teamService.getTeam(teamId);
 
         quiz.getTeams().add(team);
 

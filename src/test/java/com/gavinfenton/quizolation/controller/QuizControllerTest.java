@@ -29,13 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = QuizController.class)
 public class QuizControllerTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @MockBean
     private QuizService quizService;
-
     @Autowired
     private MockMvc mvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
@@ -66,6 +64,12 @@ public class QuizControllerTest {
         response.andExpect(status().isCreated());
         response.andExpect(header().string("Location", Endpoints.QUIZZES + "/" + idExpected));
         assertEquals(quizExpected, quizActual);
+    }
+
+    @Test
+    public void testAddTeamToQuizCallsAndReturnsFromService() {
+
+
     }
 
     @Test
@@ -153,6 +157,26 @@ public class QuizControllerTest {
         // Then
         verify(quizService).deleteQuiz(idDeleting);
         response.andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testAddingTeamToQuizControllerCallsAndReturnsQuizFromService() throws Exception {
+        //Given
+        Long quizIdSaving = 32L;
+        Long teamIdSaving = 23L;
+        Quiz quizExpected = new Quiz();
+        quizExpected.setName("Quiz name");
+        given(quizService.addTeamToQuiz(quizIdSaving, teamIdSaving)).willReturn(quizExpected);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(Endpoints.QUIZ + Endpoints.TEAM, quizIdSaving, teamIdSaving);
+
+        //When
+        ResultActions response = mvc.perform(request);
+        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
+
+        //Then
+        verify(quizService).addTeamToQuiz(quizIdSaving, teamIdSaving);
+        assertEquals(quizExpected, quizActual);
+        response.andExpect(status().isOk());
     }
 
 }

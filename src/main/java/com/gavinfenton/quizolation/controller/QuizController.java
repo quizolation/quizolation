@@ -29,10 +29,7 @@ public class QuizController {
 
     @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
     public ResponseEntity<?> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId) {
-        Quiz created = quizService.addTeamToQuiz(quizId, teamId);
-
-        URI location = URI.create(EndpointHelper.insertIds(Endpoints.QUIZ + Endpoints.TEAM, quizId, teamId));
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.ok(quizService.addTeamToQuiz(quizId, teamId));
     }
 
     @GetMapping(Endpoints.QUIZ)

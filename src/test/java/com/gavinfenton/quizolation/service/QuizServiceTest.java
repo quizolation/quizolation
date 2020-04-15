@@ -1,6 +1,7 @@
 package com.gavinfenton.quizolation.service;
 
 import com.gavinfenton.quizolation.entity.Quiz;
+import com.gavinfenton.quizolation.entity.Team;
 import com.gavinfenton.quizolation.repository.QuizRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,9 @@ public class QuizServiceTest {
 
     @InjectMocks
     private QuizService quizService;
+
+    @Mock
+    private TeamService teamService;
 
     @Mock
     private QuizRepository quizRepository;
@@ -140,6 +144,29 @@ public class QuizServiceTest {
 
         // Then
         assertEquals(idExpected, quizSaving.getId());
+        verify(quizRepository).save(quizSaving);
+        assertEquals(quizExpected, quizActual);
+    }
+
+    @Test
+    public void testAddTeamToQuizCallsAndReturnsFromRepo() throws Exception {
+        //Given
+        Quiz quizSaving = new Quiz();
+        Long quizIdSavingExpected = 32L;
+        Quiz quizExpected = new Quiz();
+        Team teamSaving = new Team();
+        Long teamIdSavingExpected = 1L;
+        Team teamExpected = new Team();
+        given(teamService.getTeam(teamIdSavingExpected)).willReturn(teamExpected);
+        given(quizRepository.findById(quizIdSavingExpected)).willReturn(Optional.of(quizSaving));
+        given(quizRepository.save(quizSaving)).willReturn(quizExpected);
+
+        //When
+        Quiz quizActual = quizService.addTeamToQuiz(quizIdSavingExpected, teamIdSavingExpected);
+
+        //Then
+        verify(teamService).getTeam(teamIdSavingExpected);
+        verify(quizRepository).findById(quizIdSavingExpected);
         verify(quizRepository).save(quizSaving);
         assertEquals(quizExpected, quizActual);
     }
