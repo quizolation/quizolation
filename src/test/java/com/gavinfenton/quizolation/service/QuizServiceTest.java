@@ -152,23 +152,26 @@ public class QuizServiceTest {
     public void testAddTeamToQuizCallsAndReturnsFromRepo() throws Exception {
         //Given
         Quiz quizSaving = new Quiz();
-        Long quizIdSavingExpected = 32L;
+        quizSaving.setId(32L);
+        Long quizIdSaving = quizSaving.getId();
         Quiz quizExpected = new Quiz();
-        Team teamSaving = new Team();
-        Long teamIdSavingExpected = 1L;
+        Long teamIdSaving = 1L;
         Team teamExpected = new Team();
-        given(teamService.getTeam(teamIdSavingExpected)).willReturn(teamExpected);
-        given(quizRepository.findById(quizIdSavingExpected)).willReturn(Optional.of(quizSaving));
+        given(teamService.getTeam(teamIdSaving)).willReturn(teamExpected);
+        given(quizRepository.findById(quizIdSaving)).willReturn(Optional.of(quizSaving));
         given(quizRepository.save(quizSaving)).willReturn(quizExpected);
 
         //When
-        Quiz quizActual = quizService.addTeamToQuiz(quizIdSavingExpected, teamIdSavingExpected);
+        Quiz quizActual = quizService.addTeamToQuiz(quizIdSaving, teamIdSaving);
 
         //Then
-        verify(teamService).getTeam(teamIdSavingExpected);
-        verify(quizRepository).findById(quizIdSavingExpected);
+        verify(teamService).getTeam(teamIdSaving);
+        verify(quizRepository).findById(quizIdSaving);
         verify(quizRepository).save(quizSaving);
         assertEquals(quizExpected, quizActual);
+        assertEquals(teamExpected,quizSaving.getTeams().get(0));
+        assertEquals(1, quizSaving.getTeams().size());
+
     }
 
     @Test

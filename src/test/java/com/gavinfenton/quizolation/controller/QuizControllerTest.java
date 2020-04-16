@@ -67,12 +67,6 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void testAddTeamToQuizCallsAndReturnsFromService() {
-
-
-    }
-
-    @Test
     public void testGetQuizCallsAndReturnsQuizFromService() throws Exception {
         // Given
         Quiz quizExpected = new Quiz();
