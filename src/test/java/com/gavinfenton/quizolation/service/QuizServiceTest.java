@@ -149,12 +149,13 @@ public class QuizServiceTest {
     }
 
     @Test
-    public void testAddTeamToQuizCallsAndReturnsFromRepo() throws Exception {
+    public void testAddTeamToQuizCallsAndReturnsFromRepo() {
         //Given
         Quiz quizSaving = new Quiz();
         quizSaving.setId(32L);
         Long quizIdSaving = quizSaving.getId();
         Quiz quizExpected = new Quiz();
+        quizExpected.setId(23L);
         Long teamIdSaving = 1L;
         Team teamExpected = new Team();
         given(teamService.getTeam(teamIdSaving)).willReturn(teamExpected);
