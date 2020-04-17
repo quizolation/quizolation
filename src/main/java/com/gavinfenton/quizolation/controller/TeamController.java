@@ -24,7 +24,7 @@ public class TeamController {
     @PostMapping(Endpoints.TEAMS)
     public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
         Team createdTeam = teamService.createTeam(team);
-        URI location = URI.create(EndpointHelper.insertIds(Endpoints.TEAM, createdTeam.getId()));
+        URI location = URI.create(EndpointHelper.insertId(Endpoints.TEAM, createdTeam.getId()));
 
         return ResponseEntity.created(location).body(createdTeam);
     }
