@@ -55,7 +55,7 @@ public class RoundControllerTest {
         roundExpected.setName("Some Other Round");
         given(roundService.createRound(quizIdSaving, roundSaving)).willReturn(roundExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post(Endpoints.QUIZ_ROUNDS, quizIdSaving)
+                .post(Endpoints.QUIZ + Endpoints.ROUNDS, quizIdSaving)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(roundSaving));
 
@@ -102,7 +102,7 @@ public class RoundControllerTest {
         List<Round> roundsExpected = Arrays.asList(roundExpected1, roundExpected2);
         given(roundService.getRounds(quizIdExpected)).willReturn(roundsExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get(Endpoints.QUIZ_ROUNDS, quizIdExpected)
+                .get(Endpoints.QUIZ + Endpoints.ROUNDS, quizIdExpected)
                 .accept(MediaType.APPLICATION_JSON);
 
         // When

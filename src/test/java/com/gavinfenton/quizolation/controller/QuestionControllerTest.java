@@ -55,7 +55,7 @@ public class QuestionControllerTest {
         questionExpected.setQuestion("Some Other Question");
         given(questionService.createQuestion(roundIdSaving, questionSaving)).willReturn(questionExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post(Endpoints.ROUND_QUESTIONS, roundIdSaving)
+                .post(Endpoints.ROUND + Endpoints.QUESTIONS, roundIdSaving)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(questionSaving));
 
@@ -102,7 +102,7 @@ public class QuestionControllerTest {
         List<Question> questionsExpected = Arrays.asList(questionExpected1, questionExpected2);
         given(questionService.getQuestions(roundIdExpected)).willReturn(questionsExpected);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get(Endpoints.ROUND_QUESTIONS, roundIdExpected)
+                .get(Endpoints.ROUND + Endpoints.QUESTIONS, roundIdExpected)
                 .accept(MediaType.APPLICATION_JSON);
 
         // When

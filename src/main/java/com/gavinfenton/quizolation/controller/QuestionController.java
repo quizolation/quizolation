@@ -19,7 +19,7 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @PostMapping(Endpoints.ROUND_QUESTIONS)
+    @PostMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
     public ResponseEntity<Question> createQuestion(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody Question question) {
         Question created = questionService.createQuestion(roundId, question);
         URI location = URI.create(EndpointHelper.insertId(Endpoints.QUESTION, created.getId()));
@@ -32,7 +32,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getQuestion(questionId));
     }
 
-    @GetMapping(Endpoints.ROUND_QUESTIONS)
+    @GetMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
     public ResponseEntity<List<Question>> getQuestions(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
         return ResponseEntity.ok(questionService.getQuestions(roundId));
     }
