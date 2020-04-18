@@ -1,6 +1,6 @@
 package com.gavinfenton.quizolation.config;
 
-import com.gavinfenton.quizolation.service.AppUserService;
+import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,22 +16,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final AppUserService appUserService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public SecurityConfig(AppUserService appUserService) {
-        this.appUserService = appUserService;
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
     public void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(appUserService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
     @Override
     public void configure(final HttpSecurity http) throws Exception {
-        http.cors();
+        http.cors().and().csrf().disable();
     }
 
     @Bean

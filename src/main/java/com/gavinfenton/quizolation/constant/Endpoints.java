@@ -20,4 +20,6 @@ public interface Endpoints {
     String TEAMS = "/teams";
     String TEAM = TEAMS + "/{" + TEAM_ID + "}";
 
+    String USERS = "/users";
+
 }
