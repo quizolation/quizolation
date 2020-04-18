@@ -29,4 +29,7 @@ public class Quiz extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
     private List<Team> teams = new ArrayList<>();
 
+    @ManyToOne
+    private AppUser master;
+
 }
