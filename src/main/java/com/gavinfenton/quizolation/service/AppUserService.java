@@ -1,6 +1,9 @@
 package com.gavinfenton.quizolation.service;
 
+import com.gavinfenton.quizolation.dto.UserDetailsDTO;
+import com.gavinfenton.quizolation.dto.UserLoginDTO;
 import com.gavinfenton.quizolation.entity.AppUser;
+import com.gavinfenton.quizolation.mapper.UserDetailsMapper;
 import com.gavinfenton.quizolation.repository.AppUserRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +21,7 @@ public class AppUserService {
 
     private final PasswordEncoder passwordEncoder;
     private final AppUserRepository appUserRepository;
+    private final UserDetailsMapper userDetailsMapper = UserDetailsMapper.INSTANCE;
 
     public AppUserService(PasswordEncoder passwordEncoder, AppUserRepository appUserRepository) {
         this.passwordEncoder = passwordEncoder;
@@ -32,20 +36,23 @@ public class AppUserService {
         return appUserRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundException(email, "User"));
     }
 
-    public AppUser registerUser(AppUser user) {
+    public UserDetailsDTO registerUser(AppUser user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
 
-        return appUserRepository.save(user);
+        user = appUserRepository.save(user);
+
+        return userDetailsMapper.toUserDetailsDTO(user);
     }
 
-    public AppUser loginUser(AppUser user) {
-        AppUser existingUser = getByEmail(user.getEmail());
+    public UserDetailsDTO loginUser(UserLoginDTO userLogin) {
+        AppUser existingUser = userLogin.getUsername().contains("@")
+                ? getByEmail(userLogin.getUsername())
+                : getByUsername(userLogin.getUsername());
 
-        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            // TODO: throw
-            return null;
+        if (!passwordEncoder.matches(userLogin.getPassword(), existingUser.getPassword())) {
+            throw new ObjectNotFoundException(userLogin.getUsername(), "User");
         }
 
         UserDetails userDetails = new User(existingUser.getUsername(), existingUser.getPassword(), new HashSet<>());
@@ -54,7 +61,7 @@ public class AppUserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return existingUser;
+        return userDetailsMapper.toUserDetailsDTO(existingUser);
     }
 
     public AppUser getUser(String username) {

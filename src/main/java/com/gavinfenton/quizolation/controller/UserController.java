@@ -1,6 +1,8 @@
 package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.UserDetailsDTO;
+import com.gavinfenton.quizolation.dto.UserLoginDTO;
 import com.gavinfenton.quizolation.entity.AppUser;
 import com.gavinfenton.quizolation.service.AppUserService;
 import org.springframework.http.ResponseEntity;
@@ -23,20 +25,20 @@ public class UserController {
 
     @PostMapping(Endpoints.USERS + "/register")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<AppUser> registerUser(@RequestBody AppUser appUser) {
+    public ResponseEntity<UserDetailsDTO> registerUser(@RequestBody AppUser appUser) {
         return ResponseEntity.ok(appUserService.registerUser(appUser));
     }
 
     @PostMapping(Endpoints.USERS + "/login")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<AppUser> loginUser(@RequestBody AppUser appUser) {
-        return ResponseEntity.ok(appUserService.loginUser(appUser));
+    public ResponseEntity<UserDetailsDTO> loginUser(@RequestBody UserLoginDTO userLogin) {
+        return ResponseEntity.ok(appUserService.loginUser(userLogin));
     }
 
     @GetMapping(Endpoints.USERS)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AppUser> getUser(Authentication authentication) {
-        return ResponseEntity.ok(appUserService.getUser(((User) authentication).getUsername()));
+        return ResponseEntity.ok(appUserService.getUser(((User) authentication.getPrincipal()).getUsername()));
     }
 
 }
