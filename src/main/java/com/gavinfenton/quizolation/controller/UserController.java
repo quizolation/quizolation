@@ -37,7 +37,7 @@ public class UserController {
 
     @GetMapping(Endpoints.USERS)
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<AppUser> getUser(Authentication authentication) {
+    public ResponseEntity<UserDetailsDTO> getUser(Authentication authentication) {
         return ResponseEntity.ok(appUserService.getUser(((User) authentication.getPrincipal()).getUsername()));
     }
 

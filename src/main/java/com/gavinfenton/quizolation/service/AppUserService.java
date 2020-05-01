@@ -64,8 +64,8 @@ public class AppUserService {
         return userDetailsMapper.toUserDetailsDTO(existingUser);
     }
 
-    public AppUser getUser(String username) {
-        return getByUsername(username);
+    public UserDetailsDTO getUser(String username) {
+        return userDetailsMapper.toUserDetailsDTO(getByUsername(username));
     }
 
 }

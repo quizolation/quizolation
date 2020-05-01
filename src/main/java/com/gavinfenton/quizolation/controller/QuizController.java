@@ -27,11 +27,6 @@ public class QuizController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
-    public ResponseEntity<?> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId) {
-        return ResponseEntity.ok(quizService.addTeamToQuiz(quizId, teamId));
-    }
-
     @GetMapping(Endpoints.QUIZ)
     public ResponseEntity<Quiz> getQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
         return ResponseEntity.ok(quizService.getQuiz(quizId));

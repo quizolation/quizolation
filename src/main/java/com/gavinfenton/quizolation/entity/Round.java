@@ -5,9 +5,6 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -22,8 +19,5 @@ public class Round extends BaseEntity {
 
     @Column
     private String description;
-
-    @OneToMany(mappedBy = "roundId")
-    private List<Question> questions = new ArrayList<>();
 
 }
