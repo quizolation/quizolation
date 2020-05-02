@@ -2,10 +2,17 @@ package com.gavinfenton.quizolation.config.security.permissionevaluator;
 
 import com.gavinfenton.quizolation.entity.AppUser;
 import com.gavinfenton.quizolation.entity.Round;
+import com.gavinfenton.quizolation.service.RoundService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RoundEvaluator implements Evaluator<Round> {
+
+    private final RoundService roundService;
+
+    public RoundEvaluator(RoundService roundService) {
+        this.roundService = roundService;
+    }
 
     public boolean hasPermission(AppUser appUser, Round round, String permission) {
         return hasPermission(appUser, round.getId(), permission);
@@ -25,13 +32,11 @@ public class RoundEvaluator implements Evaluator<Round> {
     }
 
     private boolean isQuizMaster(AppUser appUser, Long roundId) {
-        // TODO: implement
-        return false;
+        return roundService.isMasterOfRelatedQuiz(roundId, appUser.getId());
     }
 
     private boolean isQuizTeamMember(AppUser appUser, Long roundId) {
-        // TODO: implement
-        return false;
+        return roundService.isTeamMemberOfRelatedQuiz(roundId, appUser.getId());
     }
 
 }

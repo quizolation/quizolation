@@ -3,6 +3,7 @@ package com.gavinfenton.quizolation.service;
 import com.gavinfenton.quizolation.entity.Question;
 import com.gavinfenton.quizolation.repository.QuestionRepository;
 import org.hibernate.ObjectNotFoundException;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +46,14 @@ public class QuestionService {
 
     public void deleteQuestion(Long id) {
         questionRepository.deleteById(id);
+    }
+
+    public boolean isMasterOfRelatedQuiz(Long questionId, Long userId) {
+        return questionRepository.isMasterOfRelatedQuiz(questionId, userId);
+    }
+
+    public boolean isTeamMemberOfRelatedQuiz(Long questionId, Long userId) {
+        return questionRepository.isTeamMemberOfRelatedQuiz(questionId, userId);
     }
 
 }

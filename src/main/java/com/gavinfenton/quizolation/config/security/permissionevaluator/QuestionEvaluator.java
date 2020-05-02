@@ -2,10 +2,17 @@ package com.gavinfenton.quizolation.config.security.permissionevaluator;
 
 import com.gavinfenton.quizolation.entity.AppUser;
 import com.gavinfenton.quizolation.entity.Question;
+import com.gavinfenton.quizolation.service.QuestionService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionEvaluator implements Evaluator<Question> {
+
+    private final QuestionService questionService;
+
+    public QuestionEvaluator(QuestionService questionService) {
+        this.questionService = questionService;
+    }
 
     public boolean hasPermission(AppUser appUser, Question question, String permission) {
         return hasPermission(appUser, question.getId(), permission);
@@ -25,13 +32,11 @@ public class QuestionEvaluator implements Evaluator<Question> {
     }
 
     private boolean isQuizMaster(AppUser appUser, Long questionId) {
-        // TODO: implement
-        return false;
+        return questionService.isMasterOfRelatedQuiz(questionId, appUser.getId());
     }
 
-    private boolean isQuizTeamMember(AppUser appUser, Long roundId) {
-        // TODO: implement
-        return false;
+    private boolean isQuizTeamMember(AppUser appUser, Long questionId) {
+        return questionService.isTeamMemberOfRelatedQuiz(questionId, appUser.getId());
     }
 
 }

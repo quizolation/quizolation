@@ -47,4 +47,12 @@ public class RoundService {
         roundRepository.deleteById(id);
     }
 
+    public boolean isMasterOfRelatedQuiz(Long roundId, Long userId) {
+        return roundRepository.isMasterOfRelatedQuiz(roundId, userId);
+    }
+
+    public boolean isTeamMemberOfRelatedQuiz(Long roundId, Long userId) {
+        return roundRepository.isTeamMemberOfRelatedQuiz(roundId, userId);
+    }
+
 }
