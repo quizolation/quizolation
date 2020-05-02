@@ -19,6 +19,7 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    // TODO: Authorise
     @PostMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
     public ResponseEntity<Question> createQuestion(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody Question question) {
         Question created = questionService.createQuestion(roundId, question);
@@ -27,21 +28,25 @@ public class QuestionController {
         return ResponseEntity.created(location).body(created);
     }
 
+    // TODO: Authorise
     @GetMapping(Endpoints.QUESTION)
     public ResponseEntity<Question> getQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId) {
         return ResponseEntity.ok(questionService.getQuestion(questionId));
     }
 
+    // TODO: Authorise
     @GetMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
     public ResponseEntity<List<Question>> getQuestions(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
         return ResponseEntity.ok(questionService.getQuestions(roundId));
     }
 
+    // TODO: Authorise
     @PutMapping(Endpoints.QUESTION)
     public ResponseEntity<Question> updateQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId, @RequestBody Question question) {
         return ResponseEntity.ok(questionService.updateQuestion(questionId, question));
     }
 
+    // TODO: Authorise
     @DeleteMapping(Endpoints.QUESTION)
     public ResponseEntity<Void> deleteQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId) {
         questionService.deleteQuestion(questionId);

@@ -16,6 +16,7 @@ public class QuizTeamController {
         this.quizTeamService = quizTeamService;
     }
 
+    // TODO: Authorise
     @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
     public ResponseEntity<Void> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId) {
         quizTeamService.addTeamToQuiz(quizId, teamId);

@@ -21,6 +21,7 @@ public class TeamController {
         this.teamService = teamService;
     }
 
+    // TODO: Authorise
     @PostMapping(Endpoints.TEAMS)
     public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
         Team createdTeam = teamService.createTeam(team);
@@ -29,21 +30,25 @@ public class TeamController {
         return ResponseEntity.created(location).body(createdTeam);
     }
 
+    // TODO: Authorise
     @GetMapping(Endpoints.TEAMS)
     public ResponseEntity<List<Team>> getTeams() {
         return ResponseEntity.ok(teamService.getTeams());
     }
 
+    // TODO: Authorise
     @GetMapping(Endpoints.TEAM)
     public ResponseEntity<Team> getTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
         return ResponseEntity.ok(teamService.getTeam(teamId));
     }
 
+    // TODO: Authorise
     @PutMapping(Endpoints.TEAM)
     public ResponseEntity<Team> updateTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId, @RequestBody Team team) {
         return new ResponseEntity<>(teamService.updateTeam(teamId, team), HttpStatus.OK);
     }
 
+    // TODO: Authorise
     @DeleteMapping(Endpoints.TEAM)
     public ResponseEntity<Void> deleteTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
         teamService.deleteTeam(teamId);
