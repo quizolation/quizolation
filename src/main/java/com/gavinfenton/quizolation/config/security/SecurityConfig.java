@@ -1,4 +1,4 @@
-package com.gavinfenton.quizolation.config;
+package com.gavinfenton.quizolation.config.security;
 
 import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
