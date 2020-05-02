@@ -59,11 +59,11 @@ public class AppUserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return userDetailsMapper.toUserDetailsDTO(existingUser);
+        return userDetailsMapper.toDTO(existingUser);
     }
 
     public UserDetailsDTO getUser(String username) {
-        return userDetailsMapper.toUserDetailsDTO(getByUsername(username));
+        return userDetailsMapper.toDTO(getByUsername(username));
     }
 
 }

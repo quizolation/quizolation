@@ -1,8 +1,10 @@
 package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.QuizDetailsDTO;
 import com.gavinfenton.quizolation.entity.Quiz;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.mapper.QuizDetailsMapper;
 import com.gavinfenton.quizolation.service.QuizService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +17,7 @@ import java.util.List;
 public class QuizController {
 
     private final QuizService quizService;
+    private final QuizDetailsMapper quizDetailsMapper = QuizDetailsMapper.INSTANCE;
 
     public QuizController(QuizService quizService) {
         this.quizService = quizService;
@@ -25,16 +28,16 @@ public class QuizController {
      * <p>
      * Permissions: All authenticated users are permitted to create quizzes.
      *
-     * @param quiz Quiz to create.
+     * @param quizDetails Quiz to create.
      * @return Created quiz.
      */
     @PreAuthorize("isAuthenticated()")
     @PostMapping(Endpoints.QUIZZES)
-    public ResponseEntity<Quiz> createQuiz(@RequestBody Quiz quiz) {
-        Quiz created = quizService.createQuiz(quiz);
+    public ResponseEntity<QuizDetailsDTO> createQuiz(@RequestBody QuizDetailsDTO quizDetails) {
+        Quiz created = quizService.createQuiz(quizDetails);
         URI location = URI.create(EndpointHelper.insertId(Endpoints.QUIZ, created.getId()));
 
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.created(location).body(quizDetailsMapper.toDTO(created));
     }
 
     /**
@@ -47,8 +50,8 @@ public class QuizController {
      */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'READ')")
     @GetMapping(Endpoints.QUIZ)
-    public ResponseEntity<Quiz> getQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
-        return ResponseEntity.ok(quizService.getQuiz(quizId));
+    public ResponseEntity<QuizDetailsDTO> getQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
+        return ResponseEntity.ok(quizDetailsMapper.toDTO(quizService.getQuiz(quizId)));
     }
 
     /**
@@ -60,8 +63,8 @@ public class QuizController {
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping(Endpoints.QUIZZES)
-    public ResponseEntity<List<Quiz>> getQuizzes() {
-        return ResponseEntity.ok(quizService.getQuizzes());
+    public ResponseEntity<List<QuizDetailsDTO>> getQuizzes() {
+        return ResponseEntity.ok(quizDetailsMapper.toDTOList(quizService.getQuizzes()));
     }
 
     /**
@@ -69,14 +72,14 @@ public class QuizController {
      * <p>
      * Permissions: Only the quiz master should be able to update.
      *
-     * @param quizId ID of the quiz to update.
-     * @param quiz   Quiz details to update.
+     * @param quizId      ID of the quiz to update.
+     * @param quizDetails Quiz details to update.
      * @return Updated quiz details.
      */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'UPDATE')")
     @PutMapping(Endpoints.QUIZ)
-    public ResponseEntity<Quiz> updateQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Quiz quiz) {
-        return ResponseEntity.ok(quizService.updateQuiz(quizId, quiz));
+    public ResponseEntity<QuizDetailsDTO> updateQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody QuizDetailsDTO quizDetails) {
+        return ResponseEntity.ok(quizDetailsMapper.toDTO(quizService.updateQuiz(quizId, quizDetails)));
     }
 
     /**
