@@ -12,6 +12,25 @@ public class TeamEvaluator implements Evaluator<Team> {
     }
 
     public boolean hasPermission(AppUser appUser, Long teamId, String permission) {
+        switch (permission) {
+            case "CREATE":
+            case "UPDATE":
+            case "DELETE":
+                return isTeamOwner(appUser, teamId);
+            case "READ":
+                return isTeamOwner(appUser, teamId) || isTeamMember(appUser, teamId);
+            default:
+                return false;
+        }
+    }
+
+    private boolean isTeamOwner(AppUser appUser, Long teamId) {
+        // TODO: implement
+        return false;
+    }
+
+    private boolean isTeamMember(AppUser appUser, Long teamId) {
+        // TODO: implement
         return false;
     }
 

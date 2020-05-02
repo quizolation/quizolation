@@ -6,12 +6,14 @@ import com.gavinfenton.quizolation.helper.EndpointHelper;
 import com.gavinfenton.quizolation.service.TeamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 
+// TODO: Need to think about who can read teams, e.g. all authenitcated or only team members
 @RestController
 public class TeamController {
 
@@ -21,7 +23,7 @@ public class TeamController {
         this.teamService = teamService;
     }
 
-    // TODO: Authorise
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(Endpoints.TEAMS)
     public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
         Team createdTeam = teamService.createTeam(team);
