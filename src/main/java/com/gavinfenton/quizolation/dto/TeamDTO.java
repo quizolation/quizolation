@@ -5,12 +5,8 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserDetailsDTO extends BaseEntityDTO {
+public class TeamDTO extends BaseEntityDTO {
 
     private String name;
-
-    private String username;
-
-    private String email;
-
+    
 }

@@ -5,8 +5,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class QuestionAnswerDTO extends QuestionDTO {
+public class RoundDTO extends BaseEntityDTO {
 
-    private String answer;
+    private String name;
+
+    private String description;
 
 }

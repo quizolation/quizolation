@@ -1,15 +1,15 @@
 package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.TeamDTO;
 import com.gavinfenton.quizolation.entity.Team;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.mapper.TeamMapper;
 import com.gavinfenton.quizolation.service.TeamService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamMapper teamMapper = TeamMapper.INSTANCE;
 
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
@@ -32,11 +33,11 @@ public class TeamController {
      */
     @PreAuthorize("isAuthenticated()")
     @PostMapping(Endpoints.TEAMS)
-    public ResponseEntity<Team> createTeam(@RequestBody Team team, HttpServletRequest request) {
-        Team createdTeam = teamService.createTeam(team);
+    public ResponseEntity<TeamDTO> createTeam(@RequestBody TeamDTO team) {
+        Team createdTeam = teamService.createTeam(teamMapper.toTeam(team));
         URI location = URI.create(EndpointHelper.insertId(Endpoints.TEAM, createdTeam.getId()));
 
-        return ResponseEntity.created(location).body(createdTeam);
+        return ResponseEntity.created(location).body(teamMapper.toDTO(createdTeam));
     }
 
     /**
@@ -48,8 +49,8 @@ public class TeamController {
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping(Endpoints.TEAMS)
-    public ResponseEntity<List<Team>> getTeams() {
-        return ResponseEntity.ok(teamService.getTeams());
+    public ResponseEntity<List<TeamDTO>> getTeams() {
+        return ResponseEntity.ok(teamMapper.toDTOList(teamService.getTeams()));
     }
 
     /**
@@ -62,8 +63,8 @@ public class TeamController {
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping(Endpoints.TEAM)
-    public ResponseEntity<Team> getTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
-        return ResponseEntity.ok(teamService.getTeam(teamId));
+    public ResponseEntity<TeamDTO> getTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId) {
+        return ResponseEntity.ok(teamMapper.toDTO(teamService.getTeam(teamId)));
     }
 
     /**
@@ -77,8 +78,8 @@ public class TeamController {
      */
     @PreAuthorize("hasPermission(#teamId, 'Team', 'UPDATE')")
     @PutMapping(Endpoints.TEAM)
-    public ResponseEntity<Team> updateTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId, @RequestBody Team team) {
-        return new ResponseEntity<>(teamService.updateTeam(teamId, team), HttpStatus.OK);
+    public ResponseEntity<TeamDTO> updateTeam(@PathVariable(Endpoints.TEAM_ID) Long teamId, @RequestBody TeamDTO team) {
+        return ResponseEntity.ok(teamMapper.toDTO(teamService.updateTeam(teamId, teamMapper.toTeam(team))));
     }
 
     /**

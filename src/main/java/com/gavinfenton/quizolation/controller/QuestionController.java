@@ -1,8 +1,13 @@
 package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.QuestionAndAnswerDTO;
+import com.gavinfenton.quizolation.dto.QuestionDTO;
 import com.gavinfenton.quizolation.entity.Question;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.helper.SecurityHelper;
+import com.gavinfenton.quizolation.mapper.QuestionAndAnswerMapper;
+import com.gavinfenton.quizolation.mapper.QuestionMapper;
 import com.gavinfenton.quizolation.service.QuestionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,27 +20,11 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final QuestionMapper questionMapper = QuestionMapper.INSTANCE;
+    private final QuestionAndAnswerMapper questionAndAnswerMapper = QuestionAndAnswerMapper.INSTANCE;
 
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-    }
-
-    /**
-     * Creates a question for a round.
-     * <p>
-     * Permissions: User must be the quiz master of the quiz round that is getting added to.
-     *
-     * @param roundId  ID of round to add the question to.
-     * @param question Question to create.
-     * @return Question round.
-     */
-    @PreAuthorize("hasPermission(#roundId, 'Round', 'UPDATE')")
-    @PostMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
-    public ResponseEntity<Question> createQuestion(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody Question question) {
-        Question created = questionService.createQuestion(roundId, question);
-        URI location = URI.create(EndpointHelper.insertId(Endpoints.QUESTION, created.getId()));
-
-        return ResponseEntity.created(location).body(created);
     }
 
     /**
@@ -48,8 +37,26 @@ public class QuestionController {
      */
     @PreAuthorize("hasPermission(#questionId, 'QUESTION', 'READ')")
     @GetMapping(Endpoints.QUESTION)
-    public ResponseEntity<Question> getQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId) {
-        return ResponseEntity.ok(questionService.getQuestion(questionId));
+    public ResponseEntity<QuestionDTO> getQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId) {
+        return ResponseEntity.ok(map(questionService.getQuestion(questionId)));
+    }
+
+    /**
+     * Creates a question for a round.
+     * <p>
+     * Permissions: User must be the quiz master of the quiz round that is getting added to.
+     *
+     * @param roundId           ID of round to add the question to.
+     * @param questionAndAnswer Question to create.
+     * @return Question round.
+     */
+    @PreAuthorize("hasPermission(#roundId, 'Round', 'UPDATE')")
+    @PostMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
+    public ResponseEntity<QuestionDTO> createQuestion(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody QuestionAndAnswerDTO questionAndAnswer) {
+        Question created = questionService.createQuestion(roundId, questionAndAnswerMapper.toQuestion(questionAndAnswer));
+        URI location = URI.create(EndpointHelper.insertId(Endpoints.QUESTION, created.getId()));
+
+        return ResponseEntity.created(location).body(questionAndAnswerMapper.toDTO(created));
     }
 
     /**
@@ -62,8 +69,8 @@ public class QuestionController {
      */
     @PreAuthorize("hasPermission(#roundId, 'Round', 'READ')")
     @GetMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
-    public ResponseEntity<List<Question>> getQuestions(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
-        return ResponseEntity.ok(questionService.getQuestions(roundId));
+    public ResponseEntity<List<?>> getQuestions(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
+        return ResponseEntity.ok(map(questionService.getQuestions(roundId)));
     }
 
     /**
@@ -71,14 +78,14 @@ public class QuestionController {
      * <p>
      * Permissions: Only the quiz master should be able to update its questions.
      *
-     * @param questionId ID of the question to update.
-     * @param question   Question details to update.
+     * @param questionId        ID of the question to update.
+     * @param questionAndAnswer Question details to update.
      * @return Updated question details.
      */
     @PreAuthorize("hasPermission(#questionId, 'Question', 'UPDATE')")
     @PutMapping(Endpoints.QUESTION)
-    public ResponseEntity<Question> updateQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId, @RequestBody Question question) {
-        return ResponseEntity.ok(questionService.updateQuestion(questionId, question));
+    public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId, @RequestBody QuestionAndAnswerDTO questionAndAnswer) {
+        return ResponseEntity.ok(questionAndAnswerMapper.toDTO(questionService.updateQuestion(questionId, questionAndAnswerMapper.toQuestion(questionAndAnswer))));
     }
 
     /**
@@ -94,6 +101,18 @@ public class QuestionController {
         questionService.deleteQuestion(questionId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private QuestionDTO map(Question question) {
+        return questionService.isTeamMemberOfRelatedQuiz(question.getId(), SecurityHelper.getUserId())
+                ? questionAndAnswerMapper.toDTO(question)
+                : questionMapper.toDTO(question);
+    }
+
+    private List<?> map(List<Question> question) {
+        return questionService.isTeamMemberOfRelatedQuiz(question.get(0).getId(), SecurityHelper.getUserId())
+                ? questionAndAnswerMapper.toDTOList(question)
+                : questionMapper.toDTOList(question);
     }
 
 }

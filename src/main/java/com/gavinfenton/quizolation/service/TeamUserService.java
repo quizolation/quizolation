@@ -21,8 +21,4 @@ public class TeamUserService {
         teamUserRepository.save(teamUser);
     }
 
-    public boolean isQuizTeamMember(Long teamId, Long userId) {
-        return teamUserRepository.isTeamMember(teamId, userId);
-    }
-
 }

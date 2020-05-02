@@ -1,8 +1,10 @@
 package com.gavinfenton.quizolation.controller;
 
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.RoundDTO;
 import com.gavinfenton.quizolation.entity.Round;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.mapper.RoundMapper;
 import com.gavinfenton.quizolation.service.RoundService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +17,7 @@ import java.util.List;
 public class RoundController {
 
     private final RoundService roundService;
+    private final RoundMapper roundMapper = RoundMapper.INSTANCE;
 
     public RoundController(RoundService roundService) {
         this.roundService = roundService;
@@ -31,11 +34,11 @@ public class RoundController {
      */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'UPDATE')")
     @PostMapping(Endpoints.QUIZ + Endpoints.ROUNDS)
-    public ResponseEntity<Round> createRound(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody Round round) {
-        Round created = roundService.createRound(quizId, round);
+    public ResponseEntity<RoundDTO> createRound(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody RoundDTO round) {
+        Round created = roundService.createRound(quizId, roundMapper.toRound(round));
         URI location = URI.create(EndpointHelper.insertId(Endpoints.ROUND, created.getId()));
 
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.created(location).body(roundMapper.toDTO(created));
     }
 
     /**
@@ -48,8 +51,8 @@ public class RoundController {
      */
     @PreAuthorize("hasPermission(#roundId, 'Round', 'READ')")
     @GetMapping(Endpoints.ROUND)
-    public ResponseEntity<Round> getRound(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
-        return ResponseEntity.ok(roundService.getRound(roundId));
+    public ResponseEntity<RoundDTO> getRound(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
+        return ResponseEntity.ok(roundMapper.toDTO(roundService.getRound(roundId)));
     }
 
     /**
@@ -62,8 +65,8 @@ public class RoundController {
      */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'READ')")
     @GetMapping(Endpoints.QUIZ + Endpoints.ROUNDS)
-    public ResponseEntity<List<Round>> getRounds(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
-        return ResponseEntity.ok(roundService.getRounds(quizId));
+    public ResponseEntity<List<RoundDTO>> getRounds(@PathVariable(Endpoints.QUIZ_ID) Long quizId) {
+        return ResponseEntity.ok(roundMapper.toDTOList(roundService.getRounds(quizId)));
     }
 
     /**
@@ -77,8 +80,8 @@ public class RoundController {
      */
     @PreAuthorize("hasPermission(#roundId, 'Round', 'UPDATE')")
     @PutMapping(Endpoints.ROUND)
-    public ResponseEntity<Round> updateRound(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody Round round) {
-        return ResponseEntity.ok(roundService.updateRound(roundId, round));
+    public ResponseEntity<RoundDTO> updateRound(@PathVariable(Endpoints.ROUND_ID) Long roundId, @RequestBody RoundDTO round) {
+        return ResponseEntity.ok(roundMapper.toDTO(roundService.updateRound(roundId, roundMapper.toRound(round))));
     }
 
     /**

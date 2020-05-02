@@ -34,7 +34,7 @@ public class QuizController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping(Endpoints.QUIZZES)
     public ResponseEntity<QuizDetailsDTO> createQuiz(@RequestBody QuizDetailsDTO quizDetails) {
-        Quiz created = quizService.createQuiz(quizDetails);
+        Quiz created = quizService.createQuiz(quizDetailsMapper.toQuiz(quizDetails));
         URI location = URI.create(EndpointHelper.insertId(Endpoints.QUIZ, created.getId()));
 
         return ResponseEntity.created(location).body(quizDetailsMapper.toDTO(created));
@@ -79,7 +79,7 @@ public class QuizController {
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'UPDATE')")
     @PutMapping(Endpoints.QUIZ)
     public ResponseEntity<QuizDetailsDTO> updateQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @RequestBody QuizDetailsDTO quizDetails) {
-        return ResponseEntity.ok(quizDetailsMapper.toDTO(quizService.updateQuiz(quizId, quizDetails)));
+        return ResponseEntity.ok(quizDetailsMapper.toDTO(quizService.updateQuiz(quizId, quizDetailsMapper.toQuiz(quizDetails))));
     }
 
     /**
