@@ -7,6 +7,7 @@ public interface Endpoints {
     String ROUND_ID = "roundId";
     String QUESTION_ID = "questionId";
     String TEAM_ID = "teamId";
+    String USER_ID = "userId";
 
     String QUIZZES = "/quizzes";
     String QUIZ = QUIZZES + "/{" + QUIZ_ID + "}";
@@ -21,5 +22,6 @@ public interface Endpoints {
     String TEAM = TEAMS + "/{" + TEAM_ID + "}";
 
     String USERS = "/users";
+    String USER = USERS + "/{" + USER_ID + "}";
 
 }

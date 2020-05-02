@@ -36,14 +36,12 @@ public class AppUserService {
         return appUserRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundException(email, "User"));
     }
 
-    public UserDetailsDTO registerUser(AppUser user) {
+    public void registerUser(AppUser user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
 
-        user = appUserRepository.save(user);
-
-        return userDetailsMapper.toUserDetailsDTO(user);
+        appUserRepository.save(user);
     }
 
     public UserDetailsDTO loginUser(UserLoginDTO userLogin) {
