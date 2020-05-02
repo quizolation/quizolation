@@ -18,7 +18,7 @@ public class TeamEvaluator implements Evaluator<Team> {
             case "DELETE":
                 return isTeamOwner(appUser, teamId);
             case "READ":
-                return isTeamOwner(appUser, teamId) || isTeamMember(appUser, teamId);
+                return true;
             default:
                 return false;
         }

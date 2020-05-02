@@ -71,7 +71,7 @@ public class QuizController {
      *
      * @param quizId ID of the quiz to update.
      * @param quiz   Quiz details to update.
-     * @return Updated quiz details
+     * @return Updated quiz details.
      */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'UPDATE')")
     @PutMapping(Endpoints.QUIZ)
