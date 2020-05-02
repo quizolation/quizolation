@@ -21,9 +21,7 @@ public class QuizPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        Evaluator<?> evaluator = permissionEvaluators.get(targetDomainObject.getClass().getSimpleName());
-
-        return evaluator
+        return permissionEvaluators.get(targetDomainObject.getClass().getSimpleName())
                 .hasPermission(getUser(authentication), targetDomainObject, (String) permission);
     }
 

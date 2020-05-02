@@ -10,8 +10,8 @@ CREATE TABLE app_user
 ALTER TABLE quiz
     ADD COLUMN master_id BIGINT REFERENCES app_user (id) ON DELETE CASCADE;
 
-CREATE TABLE app_users_teams
+CREATE TABLE team_user
 (
-    app_user_id BIGINT REFERENCES app_user (id) ON DELETE CASCADE,
-    team_id     BIGINT REFERENCES team (id) ON DELETE CASCADE
+    team_id     BIGINT REFERENCES team (id) ON DELETE CASCADE,
+    app_user_id BIGINT REFERENCES app_user (id) ON DELETE CASCADE
 );

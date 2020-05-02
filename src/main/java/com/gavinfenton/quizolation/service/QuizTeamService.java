@@ -20,4 +20,9 @@ public class QuizTeamService {
 
         quizTeamRepository.save(quizTeam);
     }
+
+    public boolean isQuizTeamMember(Long quizId, Long userId) {
+        return quizTeamRepository.isQuizTeamMember(quizId, userId);
+    }
+
 }
