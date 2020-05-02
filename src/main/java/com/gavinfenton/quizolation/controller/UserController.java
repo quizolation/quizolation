@@ -23,18 +23,43 @@ public class UserController {
         this.appUserService = appUserService;
     }
 
+    /**
+     * Registers a new user.
+     * <p>
+     * Permissions: Any unauthenticated user can register.
+     *
+     * @param appUser Registration details.
+     */
     @PostMapping(Endpoints.USERS + "/register")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<UserDetailsDTO> registerUser(@RequestBody AppUser appUser) {
-        return ResponseEntity.ok(appUserService.registerUser(appUser));
+    public ResponseEntity<Void> registerUser(@RequestBody AppUser appUser) {
+        appUserService.registerUser(appUser);
+
+        return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Logs in a user.
+     * <p>
+     * Permissions: Any unauthenticated users can attempt to log in.
+     *
+     * @param userLogin Log in details.
+     * @return User details.
+     */
     @PostMapping(Endpoints.USERS + "/login")
     @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserDetailsDTO> loginUser(@RequestBody UserLoginDTO userLogin) {
         return ResponseEntity.ok(appUserService.loginUser(userLogin));
     }
 
+    /**
+     * Returns the user details of the authenticated user.
+     * <p>
+     * Permissions: Any user should be able to get their own details.
+     *
+     * @param authentication User authentication.
+     * @return User details.
+     */
     @GetMapping(Endpoints.USERS)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDetailsDTO> getUser(Authentication authentication) {

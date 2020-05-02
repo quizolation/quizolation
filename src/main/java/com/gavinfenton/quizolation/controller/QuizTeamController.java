@@ -17,6 +17,14 @@ public class QuizTeamController {
         this.quizTeamService = quizTeamService;
     }
 
+    /**
+     * Adds a team to a quiz.
+     * <p>
+     * Permissions: User must be the quiz master of the quiz they are adding the team to.
+     *
+     * @param quizId ID of the quiz to add the team to.
+     * @param teamId ID of the team to be added.
+     */
     @PreAuthorize("hasPermission(#quizId, 'Quiz', 'UPDATE')")
     @PostMapping(Endpoints.QUIZ + Endpoints.TEAM)
     public ResponseEntity<Void> addTeamToQuiz(@PathVariable(Endpoints.QUIZ_ID) Long quizId, @PathVariable(Endpoints.TEAM_ID) Long teamId) {
