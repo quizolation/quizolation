@@ -38,7 +38,9 @@ public class RoundService {
     }
 
     public Round updateRound(Long id, Round round) {
-        round.setId(id);
+        Round existing = getRound(id);
+        existing.setName(round.getName());
+        existing.setDescription(round.getDescription());
 
         return roundRepository.save(round);
     }

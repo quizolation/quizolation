@@ -13,5 +13,6 @@ ALTER TABLE quiz
 CREATE TABLE team_user
 (
     team_id     BIGINT REFERENCES team (id) ON DELETE CASCADE,
-    app_user_id BIGINT REFERENCES app_user (id) ON DELETE CASCADE
+    app_user_id BIGINT REFERENCES app_user (id) ON DELETE CASCADE,
+    UNIQUE (team_id, app_user_id)
 );

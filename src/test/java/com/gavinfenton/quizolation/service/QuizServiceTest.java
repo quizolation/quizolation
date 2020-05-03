@@ -150,28 +150,29 @@ public class QuizServiceTest {
 
     @Test
     public void testAddTeamToQuizCallsAndReturnsFromRepo() {
-        //Given
-        Quiz quizSaving = new Quiz();
-        quizSaving.setId(32L);
-        Long quizIdSaving = quizSaving.getId();
-        Quiz quizExpected = new Quiz();
-        quizExpected.setId(23L);
-        Long teamIdSaving = 1L;
-        Team teamExpected = new Team();
-        given(teamService.getTeam(teamIdSaving)).willReturn(teamExpected);
-        given(quizRepository.findById(quizIdSaving)).willReturn(Optional.of(quizSaving));
-        given(quizRepository.save(quizSaving)).willReturn(quizExpected);
-
-        //When
-        Quiz quizActual = quizService.addTeamToQuiz(quizIdSaving, teamIdSaving);
-
-        //Then
-        verify(teamService).getTeam(teamIdSaving);
-        verify(quizRepository).findById(quizIdSaving);
-        verify(quizRepository).save(quizSaving);
-        assertEquals(quizExpected, quizActual);
-        assertEquals(teamExpected,quizSaving.getTeams().get(0));
-        assertEquals(1, quizSaving.getTeams().size());
+        fail();
+//        //Given
+//        Quiz quizSaving = new Quiz();
+//        quizSaving.setId(32L);
+//        Long quizIdSaving = quizSaving.getId();
+//        Quiz quizExpected = new Quiz();
+//        quizExpected.setId(23L);
+//        Long teamIdSaving = 1L;
+//        Team teamExpected = new Team();
+//        given(teamService.getTeam(teamIdSaving)).willReturn(teamExpected);
+//        given(quizRepository.findById(quizIdSaving)).willReturn(Optional.of(quizSaving));
+//        given(quizRepository.save(quizSaving)).willReturn(quizExpected);
+//
+//        //When
+//        Quiz quizActual = quizService.addTeamToQuiz(quizIdSaving, teamIdSaving);
+//
+//        //Then
+//        verify(teamService).getTeam(teamIdSaving);
+//        verify(quizRepository).findById(quizIdSaving);
+//        verify(quizRepository).save(quizSaving);
+//        assertEquals(quizExpected, quizActual);
+//        assertEquals(teamExpected,quizSaving.getTeams().get(0));
+//        assertEquals(1, quizSaving.getTeams().size());
 
     }
 

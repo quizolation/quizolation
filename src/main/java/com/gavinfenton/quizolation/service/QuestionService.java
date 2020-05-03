@@ -38,7 +38,10 @@ public class QuestionService {
     }
 
     public Question updateQuestion(Long id, Question question) {
-        question.setId(id);
+        Question existing = getQuestion(id);
+        existing.setQuestion(question.getQuestion());
+        existing.setAnswer(question.getAnswer());
+        existing.setPoints(question.getPoints());
 
         return questionRepository.save(question);
     }

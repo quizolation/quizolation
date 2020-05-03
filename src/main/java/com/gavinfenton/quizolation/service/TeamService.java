@@ -1,6 +1,7 @@
 package com.gavinfenton.quizolation.service;
 
 import com.gavinfenton.quizolation.entity.Team;
+import com.gavinfenton.quizolation.helper.SecurityHelper;
 import com.gavinfenton.quizolation.repository.TeamRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class TeamService {
 
     public Team createTeam(Team team) {
         team.setId(null);
+        team.setLeaderId(SecurityHelper.getUserId());
+
         return teamRepository.save(team);
     }
 
@@ -30,7 +33,9 @@ public class TeamService {
     }
 
     public Team updateTeam(Long id, Team team) {
-        team.setId(id);
+        Team existing = getTeam(id);
+        existing.setName(team.getName());
+
         return teamRepository.save(team);
     }
 

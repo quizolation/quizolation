@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -30,8 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class QuizControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @MockBean
     private QuizService quizService;
+
     @Autowired
     private MockMvc mvc;
 
@@ -155,22 +158,23 @@ public class QuizControllerTest {
 
     @Test
     public void testAddingTeamToQuizControllerCallsAndReturnsQuizFromService() throws Exception {
-        //Given
-        Long quizIdSaving = 32L;
-        Long teamIdSaving = 23L;
-        Quiz quizExpected = new Quiz();
-        quizExpected.setName("Quiz name");
-        given(quizService.addTeamToQuiz(quizIdSaving, teamIdSaving)).willReturn(quizExpected);
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(Endpoints.QUIZ + Endpoints.TEAM, quizIdSaving, teamIdSaving);
-
-        //When
-        ResultActions response = mvc.perform(request);
-        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
-
-        //Then
-        verify(quizService).addTeamToQuiz(quizIdSaving, teamIdSaving);
-        assertEquals(quizExpected, quizActual);
-        response.andExpect(status().isOk());
+        fail();
+//        //Given
+//        Long quizIdSaving = 32L;
+//        Long teamIdSaving = 23L;
+//        Quiz quizExpected = new Quiz();
+//        quizExpected.setName("Quiz name");
+//        given(quizService.addTeamToQuiz(quizIdSaving, teamIdSaving)).willReturn(quizExpected);
+//        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(Endpoints.QUIZ + Endpoints.TEAM, quizIdSaving, teamIdSaving);
+//
+//        //When
+//        ResultActions response = mvc.perform(request);
+//        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
+//
+//        //Then
+//        verify(quizService).addTeamToQuiz(quizIdSaving, teamIdSaving);
+//        assertEquals(quizExpected, quizActual);
+//        response.andExpect(status().isOk());
     }
 
 }
