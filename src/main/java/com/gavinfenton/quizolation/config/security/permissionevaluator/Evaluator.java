@@ -5,6 +5,7 @@ import com.gavinfenton.quizolation.entity.BaseEntity;
 
 public interface Evaluator<T extends BaseEntity> {
 
+    @SuppressWarnings("unchecked")
     default boolean hasPermission(AppUser appUser, Object targetDomainObject, String permission) {
         return hasPermission(appUser, (T) targetDomainObject, permission);
     }

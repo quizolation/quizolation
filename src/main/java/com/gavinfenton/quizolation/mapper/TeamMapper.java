@@ -3,11 +3,12 @@ package com.gavinfenton.quizolation.mapper;
 import com.gavinfenton.quizolation.dto.TeamDTO;
 import com.gavinfenton.quizolation.entity.Team;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TeamMapper {
 
     TeamMapper INSTANCE = Mappers.getMapper(TeamMapper.class);

@@ -3,11 +3,12 @@ package com.gavinfenton.quizolation.mapper;
 import com.gavinfenton.quizolation.dto.RoundDTO;
 import com.gavinfenton.quizolation.entity.Round;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RoundMapper {
 
     RoundMapper INSTANCE = Mappers.getMapper(RoundMapper.class);
