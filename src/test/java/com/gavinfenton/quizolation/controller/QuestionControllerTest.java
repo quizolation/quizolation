@@ -2,9 +2,11 @@ package com.gavinfenton.quizolation.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Question;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.QuestionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -27,6 +30,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 @WebMvcTest(controllers = QuestionController.class)
 public class QuestionControllerTest {
 
@@ -38,9 +42,16 @@ public class QuestionControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    private QuizPermissionEvaluator quizPermissionEvaluator;
+
     @BeforeEach
     public void setup() {
         initMocks(this);
+        ControllerTestHelper.setupHasPermissionPasses(quizPermissionEvaluator);
     }
 
     @Test

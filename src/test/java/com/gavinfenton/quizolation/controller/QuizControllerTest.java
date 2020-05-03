@@ -33,6 +33,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 @WebMvcTest(controllers = QuizController.class)
 public class QuizControllerTest {
 
@@ -41,11 +42,11 @@ public class QuizControllerTest {
     @MockBean
     private QuizService quizService;
 
-    @MockBean
-    private UserDetailsServiceImpl userDetailsService;
-
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
     @MockBean
     private QuizPermissionEvaluator quizPermissionEvaluator;
@@ -53,10 +54,7 @@ public class QuizControllerTest {
     @BeforeEach
     public void setup() {
         initMocks(this);
-
-        // Ensure hasPermission(...) allows requests to continue
-        given(quizPermissionEvaluator.hasPermission(any(), any(), any())).willReturn(true);
-        given(quizPermissionEvaluator.hasPermission(any(), any(), any(), any())).willReturn(true);
+        ControllerTestHelper.setupHasPermissionPasses(quizPermissionEvaluator);
     }
 
     @Test
@@ -158,7 +156,6 @@ public class QuizControllerTest {
     }
 
     @Test
-    @WithMockUser
     public void testDeleteQuizCallsService() throws Exception {
         // Given
         Long idDeleting = 321L;

@@ -2,8 +2,10 @@ package com.gavinfenton.quizolation.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Team;
+import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -26,20 +29,28 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 @WebMvcTest(controllers = TeamController.class)
 public class TeamControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @MockBean
+    private TeamService teamService;
+
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private TeamService teamService;
+    private UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    private QuizPermissionEvaluator quizPermissionEvaluator;
 
     @BeforeEach
     public void setUp() {
         initMocks(this);
+        ControllerTestHelper.setupHasPermissionPasses(quizPermissionEvaluator);
     }
 
     @Test
