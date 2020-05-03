@@ -55,7 +55,7 @@ public class AppUserService {
 
         UserDetails userDetails = new User(existingUser.getUsername(), existingUser.getPassword(), new HashSet<>());
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(existingUser, userDetails.getPassword(), userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

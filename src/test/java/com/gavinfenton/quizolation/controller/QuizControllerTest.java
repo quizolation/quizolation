@@ -2,8 +2,10 @@ package com.gavinfenton.quizolation.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.entity.Quiz;
+import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.QuizService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -21,6 +25,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -35,12 +41,22 @@ public class QuizControllerTest {
     @MockBean
     private QuizService quizService;
 
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private QuizPermissionEvaluator quizPermissionEvaluator;
 
     @BeforeEach
     public void setup() {
         initMocks(this);
+
+        // Ensure hasPermission(...) allows requests to continue
+        given(quizPermissionEvaluator.hasPermission(any(), any(), any())).willReturn(true);
+        given(quizPermissionEvaluator.hasPermission(any(), any(), any(), any())).willReturn(true);
     }
 
     @Test
@@ -142,6 +158,7 @@ public class QuizControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testDeleteQuizCallsService() throws Exception {
         // Given
         Long idDeleting = 321L;
@@ -152,6 +169,7 @@ public class QuizControllerTest {
         ResultActions response = mvc.perform(request);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idDeleting), eq("Quiz"), eq("DELETE"));
         verify(quizService).deleteQuiz(idDeleting);
         response.andExpect(status().isNoContent());
     }
