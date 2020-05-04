@@ -9,6 +9,7 @@ import com.gavinfenton.quizolation.helper.SecurityHelper;
 import com.gavinfenton.quizolation.mapper.QuestionAndAnswerMapper;
 import com.gavinfenton.quizolation.mapper.QuestionMapper;
 import com.gavinfenton.quizolation.service.QuestionService;
+import com.gavinfenton.quizolation.service.RoundService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +21,13 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final RoundService roundService;
     private final QuestionMapper questionMapper = QuestionMapper.INSTANCE;
     private final QuestionAndAnswerMapper questionAndAnswerMapper = QuestionAndAnswerMapper.INSTANCE;
 
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService, RoundService roundService) {
         this.questionService = questionService;
+        this.roundService = roundService;
     }
 
     /**
@@ -38,7 +41,7 @@ public class QuestionController {
     @PreAuthorize("hasPermission(#questionId, 'QUESTION', 'READ')")
     @GetMapping(Endpoints.QUESTION)
     public ResponseEntity<QuestionDTO> getQuestion(@PathVariable(Endpoints.QUESTION_ID) Long questionId) {
-        return ResponseEntity.ok(map(questionService.getQuestion(questionId)));
+        return ResponseEntity.ok(mapQuestion(questionId, questionService.getQuestion(questionId)));
     }
 
     /**
@@ -70,7 +73,7 @@ public class QuestionController {
     @PreAuthorize("hasPermission(#roundId, 'Round', 'READ')")
     @GetMapping(Endpoints.ROUND + Endpoints.QUESTIONS)
     public ResponseEntity<List<?>> getQuestions(@PathVariable(Endpoints.ROUND_ID) Long roundId) {
-        return ResponseEntity.ok(map(questionService.getQuestions(roundId)));
+        return ResponseEntity.ok(mapQuestions(roundId, questionService.getQuestions(roundId)));
     }
 
     /**
@@ -103,14 +106,14 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
-    private QuestionDTO map(Question question) {
-        return questionService.isTeamMemberOfRelatedQuiz(question.getId(), SecurityHelper.getUserId())
+    private QuestionDTO mapQuestion(Long questionId, Question question) {
+        return questionService.isMasterOfRelatedQuiz(questionId, SecurityHelper.getUserId())
                 ? questionAndAnswerMapper.toDTO(question)
                 : questionMapper.toDTO(question);
     }
 
-    private List<?> map(List<Question> question) {
-        return questionService.isTeamMemberOfRelatedQuiz(question.get(0).getId(), SecurityHelper.getUserId())
+    private List<?> mapQuestions(Long roundId, List<Question> question) {
+        return roundService.isMasterOfRelatedQuiz(roundId, SecurityHelper.getUserId())
                 ? questionAndAnswerMapper.toDTOList(question)
                 : questionMapper.toDTOList(question);
     }

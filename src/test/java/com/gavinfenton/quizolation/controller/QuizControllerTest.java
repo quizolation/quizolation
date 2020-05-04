@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.QuizDetailsDTO;
 import com.gavinfenton.quizolation.entity.Quiz;
+import com.gavinfenton.quizolation.mapper.QuizDetailsMapper;
 import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.QuizService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -38,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class QuizControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final QuizDetailsMapper quizDetailsMapper = QuizDetailsMapper.INSTANCE;
 
     @MockBean
     private QuizService quizService;
@@ -60,27 +63,30 @@ public class QuizControllerTest {
     @Test
     public void testCreateQuizCallsAndReturnsQuizFromService() throws Exception {
         // Given
-        Quiz quizSaving = new Quiz();
-        quizSaving.setName("Some Quiz");
-        Quiz quizExpected = new Quiz();
+        QuizDetailsDTO dtoSaving = new QuizDetailsDTO();
+        dtoSaving.setName("Some Quiz");
+        Quiz quizSaving = quizDetailsMapper.toQuiz(dtoSaving);
+
+        Quiz quizSaved = new Quiz();
         Long idExpected = 135L;
-        quizExpected.setId(idExpected);
-        quizExpected.setName("Some Other Quiz");
-        given(quizService.createQuiz(quizSaving)).willReturn(quizExpected);
+        quizSaved.setId(idExpected);
+        quizSaved.setName("Some Other Quiz");
+
+        given(quizService.createQuiz(quizSaving)).willReturn(quizSaved);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(Endpoints.QUIZZES)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(quizSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
+        QuizDetailsDTO quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), QuizDetailsDTO.class);
 
         // Then
         verify(quizService).createQuiz(quizSaving);
         response.andExpect(status().isCreated());
         response.andExpect(header().string("Location", Endpoints.QUIZZES + "/" + idExpected));
-        assertEquals(quizExpected, quizActual);
+        assertMappedDTOEqualsQuiz(quizSaved, quizActual);
     }
 
     @Test
@@ -96,12 +102,13 @@ public class QuizControllerTest {
 
         // When
         ResultActions response = mvc.perform(request);
-        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
+        QuizDetailsDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), QuizDetailsDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idExpected), eq("Quiz"), eq("READ"));
         verify(quizService).getQuiz(idExpected);
         response.andExpect(status().isOk());
-        assertEquals(quizExpected, quizActual);
+        assertMappedDTOEqualsQuiz(quizExpected, dtoActual);
     }
 
     @Test
@@ -119,7 +126,7 @@ public class QuizControllerTest {
 
         // When
         ResultActions response = mvc.perform(request);
-        List<Quiz> quizzesActual = objectMapper.readValue(
+        List<QuizDetailsDTO> dtosActual = objectMapper.readValue(
                 response.andReturn().getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });
@@ -127,32 +134,37 @@ public class QuizControllerTest {
         // Then
         verify(quizService).getQuizzes();
         response.andExpect(status().isOk());
-        assertEquals(quizzesExpected, quizzesActual);
+        assertMappedDTOEqualsQuiz(quizExpected1, dtosActual.get(0));
+        assertMappedDTOEqualsQuiz(quizExpected2, dtosActual.get(1));
     }
 
     @Test
     public void testUpdateQuizCallsAndReturnsQuizFromService() throws Exception {
         // Given
-        Quiz quizSaving = new Quiz();
+        QuizDetailsDTO dtoSaving = new QuizDetailsDTO();
         Long idSaving = 321L;
-        quizSaving.setId(idSaving);
-        quizSaving.setName("Some Quiz");
-        Quiz quizExpected = new Quiz();
-        quizExpected.setName("Some Other Quiz");
-        given(quizService.updateQuiz(idSaving, quizSaving)).willReturn(quizExpected);
+        dtoSaving.setId(idSaving);
+        dtoSaving.setName("Some Quiz");
+        Quiz quizSaving = quizDetailsMapper.toQuiz(dtoSaving);
+
+        Quiz quizSaved = new Quiz();
+        quizSaved.setName("Some Other Quiz");
+
+        given(quizService.updateQuiz(idSaving, quizSaving)).willReturn(quizSaved);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put(Endpoints.QUIZ, idSaving)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(quizSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
+        QuizDetailsDTO quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), QuizDetailsDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idSaving), eq("Quiz"), eq("UPDATE"));
         verify(quizService).updateQuiz(idSaving, quizSaving);
         response.andExpect(status().isOk());
-        assertEquals(quizExpected, quizActual);
+        assertMappedDTOEqualsQuiz(quizSaved, quizActual);
     }
 
     @Test
@@ -171,25 +183,9 @@ public class QuizControllerTest {
         response.andExpect(status().isNoContent());
     }
 
-    @Test
-    public void testAddingTeamToQuizControllerCallsAndReturnsQuizFromService() throws Exception {
-        fail();
-//        //Given
-//        Long quizIdSaving = 32L;
-//        Long teamIdSaving = 23L;
-//        Quiz quizExpected = new Quiz();
-//        quizExpected.setName("Quiz name");
-//        given(quizService.addTeamToQuiz(quizIdSaving, teamIdSaving)).willReturn(quizExpected);
-//        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(Endpoints.QUIZ + Endpoints.TEAM, quizIdSaving, teamIdSaving);
-//
-//        //When
-//        ResultActions response = mvc.perform(request);
-//        Quiz quizActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Quiz.class);
-//
-//        //Then
-//        verify(quizService).addTeamToQuiz(quizIdSaving, teamIdSaving);
-//        assertEquals(quizExpected, quizActual);
-//        response.andExpect(status().isOk());
+    private void assertMappedDTOEqualsQuiz(Quiz expected, QuizDetailsDTO actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getName(), actual.getName());
     }
 
 }

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.TeamDTO;
 import com.gavinfenton.quizolation.entity.Team;
+import com.gavinfenton.quizolation.mapper.TeamMapper;
 import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -23,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -34,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TeamControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final TeamMapper teamMapper = TeamMapper.INSTANCE;
 
     @MockBean
     private TeamService teamService;
@@ -55,7 +62,7 @@ public class TeamControllerTest {
 
     @Test
     public void testGetTeamCallsAndReturnsQuizFromService() throws Exception {
-        //Given
+        // Given
         Team teamExpected = new Team();
         Long idExpected = 1L;
         teamExpected.setName("Team 1");
@@ -66,22 +73,23 @@ public class TeamControllerTest {
                 .get(Endpoints.TEAM, idExpected)
                 .accept(MediaType.APPLICATION_JSON);
 
-        //When
+        // When
         ResultActions response = mvc.perform(requestBuilder);
-        Team teamActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Team.class);
+        TeamDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), TeamDTO.class);
 
-        //Then
+        // Then
         verify(teamService).getTeam(idExpected);
         response.andExpect(status().isOk());
-        assertEquals(teamExpected, teamActual);
-
+        assertMappedDTOEqualsTeam(teamExpected, dtoActual);
     }
 
     @Test
-    public void testCreateTestCallsAndReturnsTeamFromService() throws Exception {
-        //Given
-        Team teamSaving = new Team();
-        teamSaving.setName("Some Team");
+    public void testCreateTeamCallsAndReturnsTeamFromService() throws Exception {
+        // Given
+        TeamDTO dtoSaving = new TeamDTO();
+        dtoSaving.setName("Some Team");
+        Team teamSaving = teamMapper.toTeam(dtoSaving);
+
         Team teamExpected = new Team();
         Long idExpected = 135L;
         teamExpected.setId(idExpected);
@@ -90,17 +98,17 @@ public class TeamControllerTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(Endpoints.TEAMS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(teamSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Team teamActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Team.class);
+        TeamDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), TeamDTO.class);
 
         // Then
         verify(teamService).createTeam(teamSaving);
         response.andExpect(status().isCreated());
         response.andExpect(header().string("Location", Endpoints.TEAMS + "/" + idExpected));
-        assertEquals(teamExpected, teamActual);
+        assertMappedDTOEqualsTeam(teamExpected, dtoActual);
     }
 
     @Test
@@ -118,7 +126,7 @@ public class TeamControllerTest {
 
         // When
         ResultActions response = mvc.perform(request);
-        List<Team> teamsActual = objectMapper.readValue(
+        List<TeamDTO> dtosActual = objectMapper.readValue(
                 response.andReturn().getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });
@@ -126,16 +134,19 @@ public class TeamControllerTest {
         // Then
         verify(teamService).getTeams();
         response.andExpect(status().isOk());
-        assertEquals(teamsExpected, teamsActual);
+        assertMappedDTOEqualsTeam(teamExpected1, dtosActual.get(0));
+        assertMappedDTOEqualsTeam(teamExpected2, dtosActual.get(1));
     }
 
     @Test
     public void testUpdateTeamCallsAndReturnsTeamFromService() throws Exception {
         // Given
-        Team teamSaving = new Team();
+        TeamDTO dtoSaving = new TeamDTO();
         Long idSaving = 321L;
-        teamSaving.setId(idSaving);
-        teamSaving.setName("Some Team");
+        dtoSaving.setId(idSaving);
+        dtoSaving.setName("Some Team");
+        Team teamSaving = teamMapper.toTeam(dtoSaving);
+
         Team teamExpected = new Team();
         teamExpected.setName("Some Other Team");
 
@@ -143,16 +154,17 @@ public class TeamControllerTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put(Endpoints.TEAM, idSaving)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(teamSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Team teamActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Team.class);
+        TeamDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), TeamDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idSaving), eq("Team"), eq("UPDATE"));
         verify(teamService).updateTeam(idSaving, teamSaving);
         response.andExpect(status().isOk());
-        assertEquals(teamExpected, teamActual);
+        assertMappedDTOEqualsTeam(teamExpected, dtoActual);
     }
 
     @Test
@@ -166,7 +178,14 @@ public class TeamControllerTest {
         ResultActions response = mvc.perform(request);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idDeleting), eq("Team"), eq("DELETE"));
         verify(teamService).deleteTeam(idDeleting);
         response.andExpect(status().isNoContent());
     }
+
+    private void assertMappedDTOEqualsTeam(Team expected, TeamDTO actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getName(), actual.getName());
+    }
+
 }

@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gavinfenton.quizolation.config.security.QuizPermissionEvaluator;
 import com.gavinfenton.quizolation.constant.Endpoints;
+import com.gavinfenton.quizolation.dto.RoundDTO;
 import com.gavinfenton.quizolation.entity.Round;
 import com.gavinfenton.quizolation.helper.EndpointHelper;
+import com.gavinfenton.quizolation.mapper.RoundMapper;
 import com.gavinfenton.quizolation.security.UserDetailsServiceImpl;
 import com.gavinfenton.quizolation.service.RoundService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -35,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RoundControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final RoundMapper roundMapper = RoundMapper.INSTANCE;
 
     @MockBean
     private RoundService roundService;
@@ -57,28 +64,32 @@ public class RoundControllerTest {
     @Test
     public void testCreateRoundCallsAndReturnsRoundFromService() throws Exception {
         // Given
-        Round roundSaving = new Round();
-        roundSaving.setName("Some Round");
+        RoundDTO dtoSaving = new RoundDTO();
+        dtoSaving.setName("Some Round");
         Long quizIdSaving = 92L;
-        Round roundExpected = new Round();
+        Round roundSaving = roundMapper.toRound(dtoSaving);
+
+        Round roundSaved = new Round();
         Long idExpected = 135L;
-        roundExpected.setId(idExpected);
-        roundExpected.setName("Some Other Round");
-        given(roundService.createRound(quizIdSaving, roundSaving)).willReturn(roundExpected);
+        roundSaved.setId(idExpected);
+        roundSaved.setName("Some Other Round");
+
+        given(roundService.createRound(quizIdSaving, roundSaving)).willReturn(roundSaved);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(Endpoints.QUIZ + Endpoints.ROUNDS, quizIdSaving)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(roundSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Round roundActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Round.class);
+        RoundDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), RoundDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(quizIdSaving), eq("Quiz"), eq("UPDATE"));
         verify(roundService).createRound(quizIdSaving, roundSaving);
         response.andExpect(status().isCreated());
         response.andExpect(header().string("Location", EndpointHelper.insertId(Endpoints.ROUND, idExpected)));
-        assertEquals(roundExpected, roundActual);
+        assertMappedDTOEqualsRound(roundSaved, dtoActual);
     }
 
     @Test
@@ -94,12 +105,13 @@ public class RoundControllerTest {
 
         // When
         ResultActions response = mvc.perform(request);
-        Round roundActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Round.class);
+        RoundDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), RoundDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idExpected), eq("Round"), eq("READ"));
         verify(roundService).getRound(idExpected);
         response.andExpect(status().isOk());
-        assertEquals(roundExpected, roundActual);
+        assertMappedDTOEqualsRound(roundExpected, dtoActual);
     }
 
     @Test
@@ -118,40 +130,45 @@ public class RoundControllerTest {
 
         // When
         ResultActions response = mvc.perform(request);
-        List<Round> roundsActual = objectMapper.readValue(
+        List<RoundDTO> roundsActual = objectMapper.readValue(
                 response.andReturn().getResponse().getContentAsString(),
                 new TypeReference<>() {
                 });
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(quizIdExpected), eq("Quiz"), eq("READ"));
         verify(roundService).getRounds(quizIdExpected);
         response.andExpect(status().isOk());
-        assertEquals(roundsExpected, roundsActual);
+        assertMappedDTOEqualsRound(roundExpected1, roundsActual.get(0));
+        assertMappedDTOEqualsRound(roundExpected2, roundsActual.get(1));
     }
 
     @Test
     public void testUpdateRoundCallsAndReturnsRoundFromService() throws Exception {
         // Given
-        Round roundSaving = new Round();
+        RoundDTO dtoSaving = new RoundDTO();
         Long idSaving = 321L;
-        roundSaving.setId(idSaving);
-        roundSaving.setName("Some Round");
-        Round roundExpected = new Round();
-        roundExpected.setName("Some Other Round");
-        given(roundService.updateRound(idSaving, roundSaving)).willReturn(roundExpected);
+        dtoSaving.setId(idSaving);
+        dtoSaving.setName("Some Round");
+        Round roundSaving = roundMapper.toRound(dtoSaving);
+
+        Round roundSaved = new Round();
+        roundSaved.setName("Some Other Round");
+        given(roundService.updateRound(idSaving, roundSaving)).willReturn(roundSaved);
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put(Endpoints.ROUND, idSaving)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(roundSaving));
+                .content(objectMapper.writeValueAsString(dtoSaving));
 
         // When
         ResultActions response = mvc.perform(request);
-        Round roundActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), Round.class);
+        RoundDTO dtoActual = objectMapper.readValue(response.andReturn().getResponse().getContentAsString(), RoundDTO.class);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idSaving), eq("Round"), eq("UPDATE"));
         verify(roundService).updateRound(idSaving, roundSaving);
         response.andExpect(status().isOk());
-        assertEquals(roundExpected, roundActual);
+        assertMappedDTOEqualsRound(roundSaved, dtoActual);
     }
 
     @Test
@@ -165,8 +182,15 @@ public class RoundControllerTest {
         ResultActions response = mvc.perform(request);
 
         // Then
+        verify(quizPermissionEvaluator).hasPermission(any(Authentication.class), eq(idDeleting), eq("Round"), eq("DELETE"));
         verify(roundService).deleteRound(idDeleting);
         response.andExpect(status().isNoContent());
+    }
+
+    public void assertMappedDTOEqualsRound(Round expected, RoundDTO actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 
 }
