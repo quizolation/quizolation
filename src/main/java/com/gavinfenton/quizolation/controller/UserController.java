@@ -3,7 +3,11 @@ package com.gavinfenton.quizolation.controller;
 import com.gavinfenton.quizolation.constant.Endpoints;
 import com.gavinfenton.quizolation.dto.UserDetailsDTO;
 import com.gavinfenton.quizolation.dto.UserLoginDTO;
+import com.gavinfenton.quizolation.dto.UserRegistrationDTO;
 import com.gavinfenton.quizolation.entity.AppUser;
+import com.gavinfenton.quizolation.mapper.UserDetailsMapper;
+import com.gavinfenton.quizolation.mapper.UserLoginMapper;
+import com.gavinfenton.quizolation.mapper.UserRegistrationMapper;
 import com.gavinfenton.quizolation.service.AppUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +23,10 @@ public class UserController {
 
     private final AppUserService appUserService;
 
+    private final UserRegistrationMapper userRegistrationMapper = UserRegistrationMapper.INSTANCE;
+    private final UserLoginMapper userLoginMapper = UserLoginMapper.INSTANCE;
+    private final UserDetailsMapper userDetailsMapper = UserDetailsMapper.INSTANCE;
+
     public UserController(AppUserService appUserService) {
         this.appUserService = appUserService;
     }
@@ -28,12 +36,12 @@ public class UserController {
      * <p>
      * Permissions: Any unauthenticated user can register.
      *
-     * @param appUser Registration details.
+     * @param registration Registration details.
      */
     @PostMapping(Endpoints.USERS + "/register")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<Void> registerUser(@RequestBody AppUser appUser) {
-        appUserService.registerUser(appUser);
+    public ResponseEntity<Void> registerUser(@RequestBody UserRegistrationDTO registration) {
+        appUserService.registerUser(userRegistrationMapper.toUser(registration));
 
         return ResponseEntity.noContent().build();
     }
@@ -49,7 +57,7 @@ public class UserController {
     @PostMapping(Endpoints.USERS + "/login")
     @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserDetailsDTO> loginUser(@RequestBody UserLoginDTO userLogin) {
-        return ResponseEntity.ok(appUserService.loginUser(userLogin));
+        return ResponseEntity.ok(userDetailsMapper.toDTO(appUserService.loginUser(userLoginMapper.toUser(userLogin))));
     }
 
     /**
@@ -63,7 +71,9 @@ public class UserController {
     @GetMapping(Endpoints.USERS)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDetailsDTO> getUser(Authentication authentication) {
-        return ResponseEntity.ok(appUserService.getUser(((User) authentication.getPrincipal()).getUsername()));
+        AppUser user = appUserService.getUserByEmail(((User) authentication.getPrincipal()).getUsername());
+
+        return ResponseEntity.ok(userDetailsMapper.toDTO(user));
     }
 
 }

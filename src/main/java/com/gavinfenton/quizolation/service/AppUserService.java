@@ -1,9 +1,6 @@
 package com.gavinfenton.quizolation.service;
 
-import com.gavinfenton.quizolation.dto.UserDetailsDTO;
-import com.gavinfenton.quizolation.dto.UserLoginDTO;
 import com.gavinfenton.quizolation.entity.AppUser;
-import com.gavinfenton.quizolation.mapper.UserDetailsMapper;
 import com.gavinfenton.quizolation.repository.AppUserRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,18 +18,13 @@ public class AppUserService {
 
     private final PasswordEncoder passwordEncoder;
     private final AppUserRepository appUserRepository;
-    private final UserDetailsMapper userDetailsMapper = UserDetailsMapper.INSTANCE;
 
     public AppUserService(PasswordEncoder passwordEncoder, AppUserRepository appUserRepository) {
         this.passwordEncoder = passwordEncoder;
         this.appUserRepository = appUserRepository;
     }
 
-    public AppUser getByUsername(String username) {
-        return appUserRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFoundException(username, "User"));
-    }
-
-    public AppUser getByEmail(String email) {
+    public AppUser getUserByEmail(String email) {
         return appUserRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundException(email, "User"));
     }
 
@@ -44,10 +36,8 @@ public class AppUserService {
         appUserRepository.save(user);
     }
 
-    public UserDetailsDTO loginUser(UserLoginDTO userLogin) {
-        AppUser existingUser = userLogin.getUsername().contains("@")
-                ? getByEmail(userLogin.getUsername())
-                : getByUsername(userLogin.getUsername());
+    public AppUser loginUser(AppUser userLogin) {
+        AppUser existingUser = getUserByEmail(userLogin.getUsername());
 
         if (!passwordEncoder.matches(userLogin.getPassword(), existingUser.getPassword())) {
             throw new ObjectNotFoundException(userLogin.getUsername(), "User");
@@ -59,11 +49,7 @@ public class AppUserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return userDetailsMapper.toDTO(existingUser);
-    }
-
-    public UserDetailsDTO getUser(String username) {
-        return userDetailsMapper.toDTO(getByUsername(username));
+        return existingUser;
     }
 
 }
