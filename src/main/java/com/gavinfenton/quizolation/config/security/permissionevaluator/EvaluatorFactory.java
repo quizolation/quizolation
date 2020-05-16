@@ -16,9 +16,9 @@ public class EvaluatorFactory {
 
     public EvaluatorFactory(QuestionEvaluator questionEvaluator, QuizEvaluator quizEvaluator, RoundEvaluator roundEvaluator, TeamEvaluator teamEvaluator) {
         subEvaluators = Map.of(
-                Question.class.getSimpleName(), questionEvaluator,
                 Quiz.class.getSimpleName(), quizEvaluator,
                 Round.class.getSimpleName(), roundEvaluator,
+                Question.class.getSimpleName(), questionEvaluator,
                 Team.class.getSimpleName(), teamEvaluator
         );
     }
