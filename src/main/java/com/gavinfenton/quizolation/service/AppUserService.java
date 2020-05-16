@@ -43,9 +43,7 @@ public class AppUserService {
             throw new ObjectNotFoundException(userLogin.getUsername(), "User");
         }
 
-        UserDetails userDetails = new User(existingUser.getUsername(), existingUser.getPassword(), new HashSet<>());
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(existingUser, userDetails.getPassword(), userDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), new HashSet<>());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

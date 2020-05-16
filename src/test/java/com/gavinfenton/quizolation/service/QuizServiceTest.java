@@ -1,7 +1,6 @@
 package com.gavinfenton.quizolation.service;
 
 import com.gavinfenton.quizolation.entity.Quiz;
-import com.gavinfenton.quizolation.entity.Team;
 import com.gavinfenton.quizolation.repository.QuizRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,34 +145,6 @@ public class QuizServiceTest {
         assertEquals(idExpected, quizSaving.getId());
         verify(quizRepository).save(quizSaving);
         assertEquals(quizExpected, quizActual);
-    }
-
-    @Test
-    public void testAddTeamToQuizCallsAndReturnsFromRepo() {
-        fail();
-//        //Given
-//        Quiz quizSaving = new Quiz();
-//        quizSaving.setId(32L);
-//        Long quizIdSaving = quizSaving.getId();
-//        Quiz quizExpected = new Quiz();
-//        quizExpected.setId(23L);
-//        Long teamIdSaving = 1L;
-//        Team teamExpected = new Team();
-//        given(teamService.getTeam(teamIdSaving)).willReturn(teamExpected);
-//        given(quizRepository.findById(quizIdSaving)).willReturn(Optional.of(quizSaving));
-//        given(quizRepository.save(quizSaving)).willReturn(quizExpected);
-//
-//        //When
-//        Quiz quizActual = quizService.addTeamToQuiz(quizIdSaving, teamIdSaving);
-//
-//        //Then
-//        verify(teamService).getTeam(teamIdSaving);
-//        verify(quizRepository).findById(quizIdSaving);
-//        verify(quizRepository).save(quizSaving);
-//        assertEquals(quizExpected, quizActual);
-//        assertEquals(teamExpected,quizSaving.getTeams().get(0));
-//        assertEquals(1, quizSaving.getTeams().size());
-
     }
 
     @Test

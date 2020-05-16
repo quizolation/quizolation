@@ -57,7 +57,9 @@ public class UserController {
     @PostMapping(Endpoints.USERS + "/login")
     @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserDetailsDTO> loginUser(@RequestBody UserLoginDTO userLogin) {
-        return ResponseEntity.ok(userDetailsMapper.toDTO(appUserService.loginUser(userLoginMapper.toUser(userLogin))));
+        AppUser loggedIn = appUserService.loginUser(userLoginMapper.toUser(userLogin));
+
+        return ResponseEntity.ok(userDetailsMapper.toDTO(loggedIn));
     }
 
     /**
@@ -71,7 +73,7 @@ public class UserController {
     @GetMapping(Endpoints.USERS)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDetailsDTO> getUser(Authentication authentication) {
-        AppUser user = appUserService.getUserByEmail(((User) authentication.getPrincipal()).getUsername());
+        AppUser user = appUserService.getUserByEmail(((AppUser) authentication.getPrincipal()).getEmail());
 
         return ResponseEntity.ok(userDetailsMapper.toDTO(user));
     }
