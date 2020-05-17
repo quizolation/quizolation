@@ -37,7 +37,7 @@ public class AppUserService {
     }
 
     public AppUser loginUser(AppUser userLogin) {
-        AppUser existingUser = getUserByEmail(userLogin.getUsername());
+        AppUser existingUser = getUserByEmail(userLogin.getEmail());
 
         if (!passwordEncoder.matches(userLogin.getPassword(), existingUser.getPassword())) {
             throw new ObjectNotFoundException(userLogin.getUsername(), "User");

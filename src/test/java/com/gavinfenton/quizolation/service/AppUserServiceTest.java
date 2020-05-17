@@ -10,13 +10,16 @@ import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -34,12 +37,11 @@ public class AppUserServiceTest {
     @Mock
     private SecurityContext securityContext;
 
-    @Mock
-    private Authentication authentication;
-
     @BeforeEach
     public void setup() {
         initMocks(this);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -114,7 +116,27 @@ public class AppUserServiceTest {
 
     @Test
     public void testLoginThrowsWhenPasswordsDoNotMatch() {
-        fail();
+        // Given
+        AppUser userLoggingIn = new AppUser();
+        String email = "user@email.com";
+        userLoggingIn.setEmail(email);
+        userLoggingIn.setPassword("firstpassword");
+
+        AppUser userExisting = new AppUser();
+        userExisting.setPassword("secondpassword");
+        Authentication authFromExisting = new UsernamePasswordAuthenticationToken(userExisting, userExisting.getPassword(), new HashSet<>());
+
+        given(appUserRepository.findByEmail(email)).willReturn(Optional.of(userExisting));
+        given(passwordEncoder.matches(userLoggingIn.getPassword(), userExisting.getPassword())).willReturn(false);
+
+        // When / Then
+        assertThrows(ObjectNotFoundException.class, () -> {
+            appUserService.loginUser(userLoggingIn);
+        });
+
+        verify(appUserRepository).findByEmail(email);
+        verify(passwordEncoder).matches(userLoggingIn.getPassword(), userExisting.getPassword());
+        verify(securityContext, never()).setAuthentication(authFromExisting);
     }
 
 }
